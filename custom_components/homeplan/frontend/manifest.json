@@ -1,12 +1,12 @@
 {
   "formatVersion": 1,
-  "bundleId": "aeb016c1bf34d2bfd2a7b63c38f73e9f6b8388a6fdd01e13d2e29945a764f698",
-  "version": "0.1.0",
-  "createdAt": "2026-11-19T13:01:57.740Z",
+  "bundleId": "fd1f5604b6a4cc4e25253c6d83ed5d82c37df03bb57c6c4b0f93e30aeebca3fe",
+  "version": "0.1.1",
+  "createdAt": "2026-11-19T17:40:18.598Z",
   "entry": "viewer.js",
   "loaderProtocol": 1,
   "apiProtocol": 1,
-  "minimumIntegrationVersion": "0.1.0",
+  "minimumIntegrationVersion": "0.1.1",
   "files": [
     {
       "path": "viewer.js",
