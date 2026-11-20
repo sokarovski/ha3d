@@ -1,17 +1,17 @@
 {
   "formatVersion": 1,
-  "bundleId": "fd1f5604b6a4cc4e25253c6d83ed5d82c37df03bb57c6c4b0f93e30aeebca3fe",
-  "version": "0.1.1",
-  "createdAt": "2026-11-19T17:40:18.598Z",
+  "bundleId": "0815e424fa5be143b272c9528f2d7261da6df25f15f989ed92af9821b3f6e3aa",
+  "version": "0.1.2",
+  "createdAt": "2026-11-20T10:16:20.389Z",
   "entry": "viewer.js",
   "loaderProtocol": 1,
   "apiProtocol": 1,
-  "minimumIntegrationVersion": "0.1.1",
+  "minimumIntegrationVersion": "0.1.2",
   "files": [
     {
       "path": "viewer.js",
-      "byteSize": 2083656,
-      "sha256": "79b4cdb08f45394a7626bb3c8d54086e1708c781d39ce2eb727cf0652fe543f8",
+      "byteSize": 2086934,
+      "sha256": "34fb6b6c8f19e93c527e9b145f2c36bf2962e389db121a51c6972297602b8408",
       "mediaType": "text/javascript"
     }
   ]
