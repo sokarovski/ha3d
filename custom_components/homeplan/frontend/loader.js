@@ -4632,7 +4632,8 @@ var Db = V.Object({
 		V.Literal("manual"),
 		V.Literal("discovered"),
 		V.Null()
-	])
+	]),
+	servers: V.Array(V.String({ maxLength: 2048 }), { maxItems: 16 })
 }, G), kb = V.Object({
 	houseId: Sy,
 	snapshotId: bb,
@@ -4667,11 +4668,25 @@ var Db = V.Object({
 	configuration: Ab
 }, G), Mb = V.Object({
 	revision: W,
-	connection: Ob
-}, G), Nb = V.Object({ address: V.Union([V.String({
+	connection: Ob,
+	discoveredUrl: V.Union([V.String({ maxLength: 2048 }), V.Null()])
+}, G), Nb = V.Object({
+	houseId: Sy,
+	outcome: V.Union([
+		V.Literal("imported"),
+		V.Literal("upgraded"),
+		V.Literal("unchanged")
+	]),
+	revision: W
+}, G);
+V.Object({ url: V.String({ maxLength: 2048 }) }, G);
+var Pb = V.Object({
+	url: V.String({ maxLength: 2048 }),
+	houses: V.Array(_b, { maxItems: 1e3 })
+}, G), Fb = V.Object({ address: V.Union([V.String({
 	minLength: 2,
 	maxLength: 64
-}), V.Null()]) }, G), Pb = V.Object({
+}), V.Null()]) }, G), Ib = V.Object({
 	id: Sy,
 	kind: V.Union([V.Literal("houseUpgrade"), V.Literal("panelUpgrade")]),
 	snapshotId: V.Union([bb, V.Null()]),
@@ -4708,16 +4723,16 @@ var Db = V.Object({
 		V.Literal("upgraded"),
 		V.Literal("unchanged")
 	])
-}, G), Fb = V.Object({ job: Pb }, G), Ib = V.Object({ jobs: V.Array(Pb) }, G), Lb = V.Object({
+}, G), Lb = V.Object({ job: Ib }, G), Rb = V.Object({ jobs: V.Array(Ib) }, G), zb = V.Object({
 	shipped: Db,
 	active: V.Union([Db, V.Null()]),
 	previous: V.Union([Db, V.Null()])
-}, G), Rb = V.Object({
+}, G), Bb = V.Object({
 	recovery: V.Union([V.String(), V.Null()]),
 	revision: W,
 	connection: Ob,
 	viewer: Cb,
-	frontend: Lb,
+	frontend: zb,
 	protocols: V.Object({
 		loader: V.Literal(1),
 		api: V.Literal(1)
@@ -4727,7 +4742,8 @@ V.Object({
 	expectedRevision: W,
 	patch: V.Object({
 		builderUrl: V.Optional(V.Union([V.String({ maxLength: 2048 }), V.Null()])),
-		devMode: V.Optional(V.Boolean())
+		devMode: V.Optional(V.Boolean()),
+		servers: V.Optional(V.Array(V.String({ maxLength: 2048 }), { maxItems: 16 }))
 	}, G)
 }, G), V.Object({ expectedRevision: W }, G), V.Object({
 	expectedRevision: W,
@@ -4737,12 +4753,12 @@ V.Object({
 	expectedSourceRevisionId: V.Optional(Cy),
 	expectedBundleId: V.Optional(bb)
 }, G);
-var zb = V.Object({
+var Vb = V.Object({
 	generation: W,
 	connectedAt: wy,
 	houses: V.Array(_b),
 	frontendOffer: V.Union([Db, V.Null()])
-}, G), Bb = V.Union([jb, Fb]), Vb = /* @__PURE__ */ s(((e) => {
+}, G), Hb = V.Union([jb, Lb]), Ub = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.regexpCode = e.getEsmExportName = e.getProperty = e.safeStringify = e.stringify = e.strConcat = e.addCodeArg = e.str = e._ = e.nil = e._Code = e.Name = e.IDENTIFIER = e._CodeOrName = void 0;
 	var t = class {};
 	e._CodeOrName = t, e.IDENTIFIER = /^[a-z$_][a-z$_0-9]*$/i;
@@ -4847,9 +4863,9 @@ var zb = V.Object({
 		return new r(e.toString());
 	}
 	e.regexpCode = g;
-})), Hb = /* @__PURE__ */ s(((e) => {
+})), Wb = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.ValueScope = e.ValueScopeName = e.Scope = e.varKinds = e.UsedValueState = void 0;
-	var t = Vb(), n = class extends Error {
+	var t = Ub(), n = class extends Error {
 		constructor(e) {
 			super(`CodeGen: "code" for ${e} not defined`), this.value = e.value;
 		}
@@ -4960,7 +4976,7 @@ var zb = V.Object({
 	};
 })), K = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.or = e.and = e.not = e.CodeGen = e.operators = e.varKinds = e.ValueScopeName = e.ValueScope = e.Scope = e.Name = e.regexpCode = e.stringify = e.getProperty = e.nil = e.strConcat = e.str = e._ = void 0;
-	var t = Vb(), n = Hb(), r = Vb();
+	var t = Ub(), n = Wb(), r = Ub();
 	Object.defineProperty(e, "_", {
 		enumerable: !0,
 		get: function() {
@@ -5002,7 +5018,7 @@ var zb = V.Object({
 			return r.Name;
 		}
 	});
-	var i = Hb();
+	var i = Wb();
 	Object.defineProperty(e, "Scope", {
 		enumerable: !0,
 		get: function() {
@@ -5473,7 +5489,7 @@ var zb = V.Object({
 	}
 })), q = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.checkStrictMode = e.getErrorPath = e.Type = e.useFunc = e.setEvaluated = e.evaluatedPropsToName = e.mergeEvaluated = e.eachItem = e.unescapeJsonPointer = e.escapeJsonPointer = e.escapeFragment = e.unescapeFragment = e.schemaRefOrVal = e.schemaHasRulesButRef = e.schemaHasRules = e.checkUnknownRules = e.alwaysValidSchema = e.toHash = void 0;
-	var t = K(), n = Vb();
+	var t = K(), n = Ub();
 	function r(e) {
 		let t = {};
 		for (let n of e) t[n] = !0;
@@ -5596,7 +5612,7 @@ var zb = V.Object({
 		}
 	}
 	e.checkStrictMode = x;
-})), Ub = /* @__PURE__ */ s(((e) => {
+})), Gb = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 });
 	var t = K();
 	e.default = {
@@ -5617,9 +5633,9 @@ var zb = V.Object({
 		jsonLen: new t.Name("jsonLen"),
 		jsonPart: new t.Name("jsonPart")
 	};
-})), Wb = /* @__PURE__ */ s(((e) => {
+})), Kb = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.extendErrors = e.resetErrorsCount = e.reportExtraError = e.reportError = e.keyword$DataError = e.keywordError = void 0;
-	var t = K(), n = q(), r = Ub();
+	var t = K(), n = q(), r = Gb();
 	e.keywordError = { message: ({ keyword: e }) => (0, t.str)`must pass "${e}" keyword validation` }, e.keyword$DataError = { message: ({ keyword: e, schemaType: n }) => n ? (0, t.str)`"${e}" keyword must be ${n} ($data)` : (0, t.str)`"${e}" keyword is invalid ($data)` };
 	function i(n, r = e.keywordError, i, a) {
 		let { it: o } = n, { gen: s, compositeRule: u, allErrors: f } = o, p = d(n, r, i);
@@ -5681,9 +5697,9 @@ var zb = V.Object({
 		let { keyword: o, data: s, schemaValue: c, it: l } = e, { opts: d, propertyName: f, topSchemaRef: p, schemaPath: m } = l;
 		a.push([u.keyword, o], [u.params, typeof n == "function" ? n(e) : n || (0, t._)`{}`]), d.messages && a.push([u.message, typeof i == "function" ? i(e) : i]), d.verbose && a.push([u.schema, c], [u.parentSchema, (0, t._)`${p}${m}`], [r.default.data, s]), f && a.push([u.propertyName, f]);
 	}
-})), Gb = /* @__PURE__ */ s(((e) => {
+})), qb = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.boolOrEmptySchema = e.topBoolOrEmptySchema = void 0;
-	var t = Wb(), n = K(), r = Ub(), i = { message: "boolean schema is false" };
+	var t = Kb(), n = K(), r = Gb(), i = { message: "boolean schema is false" };
 	function a(e) {
 		let { gen: t, schema: i, validateName: a } = e;
 		i === !1 ? s(e, !1) : typeof i == "object" && i.$async === !0 ? t.return(r.default.data) : (t.assign((0, n._)`${a}.errors`, null), t.return(!0));
@@ -5707,7 +5723,7 @@ var zb = V.Object({
 		};
 		(0, t.reportError)(o, i, void 0, n);
 	}
-})), Kb = /* @__PURE__ */ s(((e) => {
+})), Jb = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.getRules = e.isJSONType = void 0;
 	var t = /* @__PURE__ */ new Set([
 		"string",
@@ -5761,7 +5777,7 @@ var zb = V.Object({
 		};
 	}
 	e.getRules = r;
-})), qb = /* @__PURE__ */ s(((e) => {
+})), Yb = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.shouldUseRule = e.shouldUseGroup = e.schemaHasRulesForType = void 0;
 	function t({ schema: e, self: t }, r) {
 		let i = t.RULES.types[r];
@@ -5776,9 +5792,9 @@ var zb = V.Object({
 		return e[t.keyword] !== void 0 || t.definition.implements?.some((t) => e[t] !== void 0);
 	}
 	e.shouldUseRule = r;
-})), Jb = /* @__PURE__ */ s(((e) => {
+})), Xb = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.reportTypeError = e.checkDataTypes = e.checkDataType = e.coerceAndCheckDataType = e.getJSONTypes = e.getSchemaTypes = e.DataType = void 0;
-	var t = Kb(), n = qb(), r = Wb(), i = K(), a = q(), o;
+	var t = Jb(), n = Yb(), r = Kb(), i = K(), a = q(), o;
 	(function(e) {
 		e[e.Correct = 0] = "Correct", e[e.Wrong = 1] = "Wrong";
 	})(o || (e.DataType = o = {}));
@@ -5913,7 +5929,7 @@ var zb = V.Object({
 			it: e
 		};
 	}
-})), Yb = /* @__PURE__ */ s(((e) => {
+})), Zb = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.assignDefaults = void 0;
 	var t = K(), n = q();
 	function r(e, t) {
@@ -5933,9 +5949,9 @@ var zb = V.Object({
 		let u = (0, t._)`${l} === undefined`;
 		c.useDefaults === "empty" && (u = (0, t._)`${u} || ${l} === null || ${l} === ""`), a.if(u, (0, t._)`${l} = ${(0, t.stringify)(i)}`);
 	}
-})), Xb = /* @__PURE__ */ s(((e) => {
+})), Qb = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.validateUnion = e.validateArray = e.usePattern = e.callValidateCode = e.schemaProperties = e.allSchemaProperties = e.noPropertyInData = e.propertyInData = e.isOwnProperty = e.hasPropFunc = e.reportMissingProp = e.checkMissingProp = e.checkReportMissingProp = void 0;
-	var t = K(), n = q(), r = Ub(), i = q();
+	var t = K(), n = q(), r = Gb(), i = q();
 	function a(e, n) {
 		let { gen: r, data: i, it: a } = e;
 		r.if(d(r, i, n, a.opts.ownProperties), () => {
@@ -6037,9 +6053,9 @@ var zb = V.Object({
 		})), e.result(s, () => e.reset(), () => e.error(!0));
 	}
 	e.validateUnion = v;
-})), Zb = /* @__PURE__ */ s(((e) => {
+})), $b = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.validateKeywordUsage = e.validSchemaType = e.funcKeywordCode = e.macroKeywordCode = void 0;
-	var t = K(), n = Ub(), r = Xb(), i = Wb();
+	var t = K(), n = Gb(), r = Qb(), i = Kb();
 	function a(e, n) {
 		let { gen: r, keyword: i, schema: a, parentSchema: o, it: s } = e, c = n.macro.call(s.self, a, o, s), l = u(r, i, c);
 		s.opts.validateSchema !== !1 && s.self.validateSchema(c, !0);
@@ -6118,7 +6134,7 @@ var zb = V.Object({
 		}
 	}
 	e.validateKeywordUsage = f;
-})), Qb = /* @__PURE__ */ s(((e) => {
+})), ex = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.extendSubschemaMode = e.extendSubschemaData = e.getSubschema = void 0;
 	var t = K(), n = q();
 	function r(e, { keyword: r, schemaProp: i, schema: a, schemaPath: o, errSchemaPath: s, topSchemaRef: c }) {
@@ -6164,7 +6180,7 @@ var zb = V.Object({
 		r !== void 0 && (e.compositeRule = r), i !== void 0 && (e.createErrors = i), a !== void 0 && (e.allErrors = a), e.jtdDiscriminator = t, e.jtdMetadata = n;
 	}
 	e.extendSubschemaMode = a;
-})), $b = /* @__PURE__ */ s(((e, t) => {
+})), tx = /* @__PURE__ */ s(((e, t) => {
 	t.exports = function e(t, n) {
 		if (t === n) return !0;
 		if (t && n && typeof t == "object" && typeof n == "object") {
@@ -6188,7 +6204,7 @@ var zb = V.Object({
 		}
 		return t !== t && n !== n;
 	};
-})), ex = /* @__PURE__ */ s(((e, t) => {
+})), nx = /* @__PURE__ */ s(((e, t) => {
 	var n = t.exports = function(e, t, n) {
 		typeof t == "function" && (n = t, t = {}), n = t.cb || n;
 		var i = typeof n == "function" ? n : n.pre || function() {}, a = n.post || function() {};
@@ -6251,9 +6267,9 @@ var zb = V.Object({
 	function i(e) {
 		return e.replace(/~/g, "~0").replace(/\//g, "~1");
 	}
-})), tx = /* @__PURE__ */ s(((e) => {
+})), rx = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.getSchemaRefs = e.resolveUrl = e.normalizeId = e._getFullPath = e.getFullPath = e.inlineRef = void 0;
-	var t = q(), n = $b(), r = ex(), i = /* @__PURE__ */ new Set([
+	var t = q(), n = tx(), r = nx(), i = /* @__PURE__ */ new Set([
 		"type",
 		"format",
 		"pattern",
@@ -6342,9 +6358,9 @@ var zb = V.Object({
 		}
 	}
 	e.getSchemaRefs = h;
-})), nx = /* @__PURE__ */ s(((e) => {
+})), ix = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.getData = e.KeywordCxt = e.validateFunctionCode = void 0;
-	var t = Gb(), n = Jb(), r = qb(), i = Jb(), a = Yb(), o = Zb(), s = Qb(), c = K(), l = Ub(), u = tx(), d = q(), f = Wb();
+	var t = qb(), n = Xb(), r = Yb(), i = Xb(), a = Zb(), o = $b(), s = ex(), c = K(), l = Gb(), u = rx(), d = q(), f = Kb();
 	function p(e) {
 		S(e) && (te(e), x(e)) ? _(e) : m(e, () => (0, t.topBoolOrEmptySchema)(e));
 	}
@@ -6612,23 +6628,23 @@ var zb = V.Object({
 		}
 	}
 	e.getData = _e;
-})), rx = /* @__PURE__ */ s(((e) => {
+})), ax = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.default = class extends Error {
 		constructor(e) {
 			super("validation failed"), this.errors = e, this.ajv = this.validation = !0;
 		}
 	};
-})), ix = /* @__PURE__ */ s(((e) => {
+})), ox = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 });
-	var t = tx();
+	var t = rx();
 	e.default = class extends Error {
 		constructor(e, n, r, i) {
 			super(i || `can't resolve reference ${r} from id ${n}`), this.missingRef = (0, t.resolveUrl)(e, n, r), this.missingSchema = (0, t.normalizeId)((0, t.getFullPath)(e, this.missingRef));
 		}
 	};
-})), ax = /* @__PURE__ */ s(((e) => {
+})), sx = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.resolveSchema = e.getCompilingSchema = e.resolveRef = e.compileSchema = e.SchemaEnv = void 0;
-	var t = K(), n = rx(), r = Ub(), i = tx(), a = q(), o = nx(), s = class {
+	var t = K(), n = ax(), r = Gb(), i = rx(), a = q(), o = ix(), s = class {
 		constructor(e) {
 			this.refs = {}, this.dynamicAnchors = {};
 			let t;
@@ -6787,27 +6803,27 @@ var zb = V.Object({
 			baseId: t
 		}), o.schema !== o.root.schema) return o;
 	}
-})), ox = /* @__PURE__ */ c({
-	$id: () => sx,
+})), cx = /* @__PURE__ */ c({
+	$id: () => lx,
 	additionalProperties: () => !1,
-	default: () => fx,
-	description: () => cx,
-	properties: () => dx,
-	required: () => ux,
-	type: () => lx
-}), sx, cx, lx, ux, dx, fx, px = o((() => {
-	sx = "https://raw.githubusercontent.com/ajv-validator/ajv/master/lib/refs/data.json#", cx = "Meta-schema for $data reference (JSON AnySchema extension proposal)", lx = "object", ux = ["$data"], dx = { $data: {
+	default: () => mx,
+	description: () => ux,
+	properties: () => px,
+	required: () => fx,
+	type: () => dx
+}), lx, ux, dx, fx, px, mx, hx = o((() => {
+	lx = "https://raw.githubusercontent.com/ajv-validator/ajv/master/lib/refs/data.json#", ux = "Meta-schema for $data reference (JSON AnySchema extension proposal)", dx = "object", fx = ["$data"], px = { $data: {
 		type: "string",
 		anyOf: [{ format: "relative-json-pointer" }, { format: "json-pointer" }]
-	} }, fx = {
-		$id: sx,
-		description: cx,
-		type: lx,
-		required: ux,
-		properties: dx,
+	} }, mx = {
+		$id: lx,
+		description: ux,
+		type: dx,
+		required: fx,
+		properties: px,
 		additionalProperties: !1
 	};
-})), mx = /* @__PURE__ */ s(((e, t) => {
+})), gx = /* @__PURE__ */ s(((e, t) => {
 	var n = RegExp.prototype.test.bind(/^[\da-f]{8}-[\da-f]{4}-[\da-f]{4}-[\da-f]{4}-[\da-f]{12}$/iu), r = RegExp.prototype.test.bind(/^(?:(?:25[0-5]|2[0-4]\d|1\d{2}|[1-9]\d|\d)\.){3}(?:25[0-5]|2[0-4]\d|1\d{2}|[1-9]\d|\d)$/u), i = RegExp.prototype.test.bind(/^\d*$/u), a = RegExp.prototype.test.bind(/^[\da-f]{2}$/iu), o = RegExp.prototype.test.bind(/^[\da-z\-._~]$/iu), s = RegExp.prototype.test.bind(/^[A-Za-z0-9\-._~!$&'()*+,;=:@/]$/u), c = RegExp.prototype.test.bind(/^[A-Za-z0-9\-._~!$&'()*+,;=:@/?]$/u), l = RegExp.prototype.test.bind(/^[A-Za-z0-9\-._~!$&'()*+,;=:]$/u), u = Array(256);
 	{
 		let e = "0123456789ABCDEF";
@@ -7165,8 +7181,8 @@ var zb = V.Object({
 		normalizeIPv6: b,
 		stringArrayToHexStripped: f
 	};
-})), hx = /* @__PURE__ */ s(((e, t) => {
-	var { isUUID: n } = mx(), r = /^([\da-z][\d\-a-z]{0,31}):((?:[\w!$'()*+,\-./:;=@]|%[\da-f]{2})+)$/iu, i = [
+})), _x = /* @__PURE__ */ s(((e, t) => {
+	var { isUUID: n } = gx(), r = /^([\da-z][\d\-a-z]{0,31}):((?:[\w!$'()*+,\-./:;=@]|%[\da-f]{2})+)$/iu, i = [
 		"http",
 		"https",
 		"ws",
@@ -7271,8 +7287,8 @@ var zb = V.Object({
 		isValidSchemeName: a,
 		getSchemeHandler: y
 	};
-})), gx = /* @__PURE__ */ s(((e, t) => {
-	var { normalizeIPv6: n, removeDotSegments: r, removeDotSegmentsRelative: i, recomposeAuthority: a, normalizePercentEncoding: o, normalizePathEncoding: s, serializePathEncoding: c, normalizeQueryFragmentEncoding: l, encodeQuery: u, encodeFragment: d, reescapeHostDelimiters: f, isIPv4: p, nonSimpleDomain: m } = mx(), { SCHEMES: h, getSchemeHandler: g } = hx(), _ = /^[A-Za-z][A-Za-z0-9+.-]*$/u, v = "URI scheme is malformed.", y = "URI host is malformed.", b = /[\0-\x20"#/:<>?@[\\\]^`{|}\x7F]/u;
+})), vx = /* @__PURE__ */ s(((e, t) => {
+	var { normalizeIPv6: n, removeDotSegments: r, removeDotSegmentsRelative: i, recomposeAuthority: a, normalizePercentEncoding: o, normalizePathEncoding: s, serializePathEncoding: c, normalizeQueryFragmentEncoding: l, encodeQuery: u, encodeFragment: d, reescapeHostDelimiters: f, isIPv4: p, nonSimpleDomain: m } = gx(), { SCHEMES: h, getSchemeHandler: g } = _x(), _ = /^[A-Za-z][A-Za-z0-9+.-]*$/u, v = "URI scheme is malformed.", y = "URI host is malformed.", b = /[\0-\x20"#/:<>?@[\\\]^`{|}\x7F]/u;
 	function x(e) {
 		let t = String(e);
 		if (!_.test(t)) throw TypeError(v);
@@ -7469,13 +7485,13 @@ var zb = V.Object({
 		parse: de
 	};
 	t.exports = me, t.exports.default = me, t.exports.fastUri = me;
-})), _x = /* @__PURE__ */ s(((e) => {
+})), yx = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 });
-	var t = gx();
+	var t = vx();
 	t.code = "require(\"ajv/dist/runtime/uri\").default", e.default = t;
-})), vx = /* @__PURE__ */ s(((e) => {
+})), bx = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.CodeGen = e.Name = e.nil = e.stringify = e.str = e._ = e.KeywordCxt = void 0;
-	var t = nx();
+	var t = ix();
 	Object.defineProperty(e, "KeywordCxt", {
 		enumerable: !0,
 		get: function() {
@@ -7514,7 +7530,7 @@ var zb = V.Object({
 			return n.CodeGen;
 		}
 	});
-	var r = rx(), i = ix(), a = Kb(), o = ax(), s = K(), c = tx(), l = Jb(), u = q(), f = (px(), d(ox).default), p = _x(), m = (e, t) => new RegExp(e, t);
+	var r = ax(), i = ox(), a = Jb(), o = sx(), s = K(), c = rx(), l = Xb(), u = q(), f = (hx(), d(cx).default), p = yx(), m = (e, t) => new RegExp(e, t);
 	m.code = "new RegExp";
 	var h = [
 		"removeAdditional",
@@ -7901,16 +7917,16 @@ var zb = V.Object({
 	function ue(e) {
 		return { anyOf: [e, le] };
 	}
-})), yx = /* @__PURE__ */ s(((e) => {
+})), xx = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.default = {
 		keyword: "id",
 		code() {
 			throw Error("NOT SUPPORTED: keyword \"id\", use \"$id\" for schema ID");
 		}
 	};
-})), bx = /* @__PURE__ */ s(((e) => {
+})), Sx = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.callRef = e.getValidate = void 0;
-	var t = ix(), n = Xb(), r = K(), i = Ub(), a = ax(), o = q(), s = {
+	var t = ox(), n = Qb(), r = K(), i = Gb(), a = sx(), o = q(), s = {
 		keyword: "$ref",
 		schemaType: "string",
 		code(e) {
@@ -7986,9 +8002,9 @@ var zb = V.Object({
 		}
 	}
 	e.callRef = l, e.default = s;
-})), xx = /* @__PURE__ */ s(((e) => {
+})), Cx = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 });
-	var t = yx(), n = bx();
+	var t = xx(), n = Sx();
 	e.default = [
 		"$schema",
 		"$id",
@@ -7999,7 +8015,7 @@ var zb = V.Object({
 		t.default,
 		n.default
 	];
-})), Sx = /* @__PURE__ */ s(((e) => {
+})), wx = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 });
 	var t = K(), n = t.operators, r = {
 		maximum: {
@@ -8037,7 +8053,7 @@ var zb = V.Object({
 			e.fail$data((0, t._)`${i} ${r[n].fail} ${a} || isNaN(${i})`);
 		}
 	};
-})), Cx = /* @__PURE__ */ s(((e) => {
+})), Tx = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 });
 	var t = K();
 	e.default = {
@@ -8054,7 +8070,7 @@ var zb = V.Object({
 			e.fail$data((0, t._)`(${i} === 0 || (${s} = ${r}/${i}, ${c}))`);
 		}
 	};
-})), wx = /* @__PURE__ */ s(((e) => {
+})), Ex = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 });
 	function t(e) {
 		let t = e.length, n = 0, r = 0, i;
@@ -8062,9 +8078,9 @@ var zb = V.Object({
 		return n;
 	}
 	e.default = t, t.code = "require(\"ajv/dist/runtime/ucs2length\").default";
-})), Tx = /* @__PURE__ */ s(((e) => {
+})), Dx = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 });
-	var t = K(), n = q(), r = wx();
+	var t = K(), n = q(), r = Ex();
 	e.default = {
 		keyword: ["maxLength", "minLength"],
 		type: "string",
@@ -8082,9 +8098,9 @@ var zb = V.Object({
 			e.fail$data((0, t._)`${l} ${c} ${o}`);
 		}
 	};
-})), Ex = /* @__PURE__ */ s(((e) => {
+})), Ox = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 });
-	var t = Xb(), n = q(), r = K();
+	var t = Qb(), n = q(), r = K();
 	e.default = {
 		keyword: "pattern",
 		type: "string",
@@ -8105,7 +8121,7 @@ var zb = V.Object({
 			}
 		}
 	};
-})), Dx = /* @__PURE__ */ s(((e) => {
+})), kx = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 });
 	var t = K();
 	e.default = {
@@ -8125,9 +8141,9 @@ var zb = V.Object({
 			e.fail$data((0, t._)`Object.keys(${r}).length ${a} ${i}`);
 		}
 	};
-})), Ox = /* @__PURE__ */ s(((e) => {
+})), Ax = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 });
-	var t = Xb(), n = K(), r = q();
+	var t = Qb(), n = K(), r = q();
 	e.default = {
 		keyword: "required",
 		type: "object",
@@ -8173,7 +8189,7 @@ var zb = V.Object({
 			}
 		}
 	};
-})), kx = /* @__PURE__ */ s(((e) => {
+})), jx = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 });
 	var t = K();
 	e.default = {
@@ -8193,13 +8209,13 @@ var zb = V.Object({
 			e.fail$data((0, t._)`${r}.length ${a} ${i}`);
 		}
 	};
-})), Ax = /* @__PURE__ */ s(((e) => {
+})), Mx = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 });
-	var t = $b();
+	var t = tx();
 	t.code = "require(\"ajv/dist/runtime/equal\").default", e.default = t;
-})), jx = /* @__PURE__ */ s(((e) => {
+})), Nx = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 });
-	var t = Jb(), n = K(), r = q(), i = Ax();
+	var t = Xb(), n = K(), r = q(), i = Mx();
 	e.default = {
 		keyword: "uniqueItems",
 		type: "array",
@@ -8240,9 +8256,9 @@ var zb = V.Object({
 			}
 		}
 	};
-})), Mx = /* @__PURE__ */ s(((e) => {
+})), Px = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 });
-	var t = K(), n = q(), r = Ax();
+	var t = K(), n = q(), r = Mx();
 	e.default = {
 		keyword: "const",
 		$data: !0,
@@ -8255,9 +8271,9 @@ var zb = V.Object({
 			o || c && typeof c == "object" ? e.fail$data((0, t._)`!${(0, n.useFunc)(i, r.default)}(${a}, ${s})`) : e.fail((0, t._)`${c} !== ${a}`);
 		}
 	};
-})), Nx = /* @__PURE__ */ s(((e) => {
+})), Fx = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 });
-	var t = K(), n = q(), r = Ax();
+	var t = K(), n = q(), r = Mx();
 	e.default = {
 		keyword: "enum",
 		schemaType: "array",
@@ -8287,9 +8303,9 @@ var zb = V.Object({
 			}
 		}
 	};
-})), Px = /* @__PURE__ */ s(((e) => {
+})), Ix = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 });
-	var t = Sx(), n = Cx(), r = Tx(), i = Ex(), a = Dx(), o = Ox(), s = kx(), c = jx(), l = Mx(), u = Nx();
+	var t = wx(), n = Tx(), r = Dx(), i = Ox(), a = kx(), o = Ax(), s = jx(), c = Nx(), l = Px(), u = Fx();
 	e.default = [
 		t.default,
 		n.default,
@@ -8310,7 +8326,7 @@ var zb = V.Object({
 		l.default,
 		u.default
 	];
-})), Fx = /* @__PURE__ */ s(((e) => {
+})), Lx = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.validateAdditionalItems = void 0;
 	var t = K(), n = q(), r = {
 		keyword: "additionalItems",
@@ -8346,9 +8362,9 @@ var zb = V.Object({
 		}
 	}
 	e.validateAdditionalItems = i, e.default = r;
-})), Ix = /* @__PURE__ */ s(((e) => {
+})), Rx = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.validateTuple = void 0;
-	var t = K(), n = q(), r = Xb(), i = {
+	var t = K(), n = q(), r = Qb(), i = {
 		keyword: "items",
 		type: "array",
 		schemaType: [
@@ -8383,9 +8399,9 @@ var zb = V.Object({
 		}
 	}
 	e.validateTuple = a, e.default = i;
-})), Lx = /* @__PURE__ */ s(((e) => {
+})), zx = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 });
-	var t = Ix();
+	var t = Rx();
 	e.default = {
 		keyword: "prefixItems",
 		type: "array",
@@ -8393,9 +8409,9 @@ var zb = V.Object({
 		before: "uniqueItems",
 		code: (e) => (0, t.validateTuple)(e, "items")
 	};
-})), Rx = /* @__PURE__ */ s(((e) => {
+})), Bx = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 });
-	var t = K(), n = q(), r = Xb(), i = Fx();
+	var t = K(), n = q(), r = Qb(), i = Lx();
 	e.default = {
 		keyword: "items",
 		type: "array",
@@ -8410,7 +8426,7 @@ var zb = V.Object({
 			o.items = !0, (0, n.alwaysValidSchema)(o, t) || (s ? (0, i.validateAdditionalItems)(e, s) : e.ok((0, r.validateArray)(e)));
 		}
 	};
-})), zx = /* @__PURE__ */ s(((e) => {
+})), Vx = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 });
 	var t = K(), n = q();
 	e.default = {
@@ -8465,9 +8481,9 @@ var zb = V.Object({
 			}
 		}
 	};
-})), Bx = /* @__PURE__ */ s(((e) => {
+})), Hx = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.validateSchemaDeps = e.validatePropertyDeps = e.error = void 0;
-	var t = K(), n = q(), r = Xb();
+	var t = K(), n = q(), r = Qb();
 	e.error = {
 		message: ({ params: { property: e, depsCount: n, deps: r } }) => {
 			let i = n === 1 ? "property" : "properties";
@@ -8526,7 +8542,7 @@ var zb = V.Object({
 		}, () => i.var(c, !0)), e.ok(c));
 	}
 	e.validateSchemaDeps = s, e.default = i;
-})), Vx = /* @__PURE__ */ s(((e) => {
+})), Ux = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 });
 	var t = K(), n = q();
 	e.default = {
@@ -8554,9 +8570,9 @@ var zb = V.Object({
 			}), e.ok(s);
 		}
 	};
-})), Hx = /* @__PURE__ */ s(((e) => {
+})), Wx = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 });
-	var t = Xb(), n = K(), r = Ub(), i = q();
+	var t = Qb(), n = K(), r = Gb(), i = q();
 	e.default = {
 		keyword: "additionalProperties",
 		type: ["object"],
@@ -8615,9 +8631,9 @@ var zb = V.Object({
 			}
 		}
 	};
-})), Ux = /* @__PURE__ */ s(((e) => {
+})), Gx = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 });
-	var t = nx(), n = Xb(), r = q(), i = Hx();
+	var t = ix(), n = Qb(), r = q(), i = Wx();
 	e.default = {
 		keyword: "properties",
 		type: "object",
@@ -8644,9 +8660,9 @@ var zb = V.Object({
 			}
 		}
 	};
-})), Wx = /* @__PURE__ */ s(((e) => {
+})), Kx = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 });
-	var t = Xb(), n = K(), r = q(), i = q();
+	var t = Qb(), n = K(), r = q(), i = q();
 	e.default = {
 		keyword: "patternProperties",
 		type: "object",
@@ -8679,7 +8695,7 @@ var zb = V.Object({
 			}
 		}
 	};
-})), Gx = /* @__PURE__ */ s(((e) => {
+})), qx = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 });
 	var t = q();
 	e.default = {
@@ -8702,15 +8718,15 @@ var zb = V.Object({
 		},
 		error: { message: "must NOT be valid" }
 	};
-})), Kx = /* @__PURE__ */ s(((e) => {
+})), Jx = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.default = {
 		keyword: "anyOf",
 		schemaType: "array",
 		trackErrors: !0,
-		code: Xb().validateUnion,
+		code: Qb().validateUnion,
 		error: { message: "must match a schema in anyOf" }
 	};
-})), qx = /* @__PURE__ */ s(((e) => {
+})), Yx = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 });
 	var t = K(), n = q();
 	e.default = {
@@ -8742,7 +8758,7 @@ var zb = V.Object({
 			}
 		}
 	};
-})), Jx = /* @__PURE__ */ s(((e) => {
+})), Xx = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 });
 	var t = q();
 	e.default = {
@@ -8763,7 +8779,7 @@ var zb = V.Object({
 			});
 		}
 	};
-})), Yx = /* @__PURE__ */ s(((e) => {
+})), Zx = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 });
 	var t = K(), n = q(), r = {
 		keyword: "if",
@@ -8806,7 +8822,7 @@ var zb = V.Object({
 		return r !== void 0 && !(0, n.alwaysValidSchema)(e, r);
 	}
 	e.default = r;
-})), Xx = /* @__PURE__ */ s(((e) => {
+})), Qx = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 });
 	var t = q();
 	e.default = {
@@ -8816,9 +8832,9 @@ var zb = V.Object({
 			n.if === void 0 && (0, t.checkStrictMode)(r, `"${e}" without "if" is ignored`);
 		}
 	};
-})), Zx = /* @__PURE__ */ s(((e) => {
+})), $x = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 });
-	var t = Fx(), n = Lx(), r = Ix(), i = Rx(), a = zx(), o = Bx(), s = Vx(), c = Hx(), l = Ux(), u = Wx(), d = Gx(), f = Kx(), p = qx(), m = Jx(), h = Yx(), g = Xx();
+	var t = Lx(), n = zx(), r = Rx(), i = Bx(), a = Vx(), o = Hx(), s = Ux(), c = Wx(), l = Gx(), u = Kx(), d = qx(), f = Jx(), p = Yx(), m = Xx(), h = Zx(), g = Qx();
 	function _(e = !1) {
 		let _ = [
 			d.default,
@@ -8836,9 +8852,9 @@ var zb = V.Object({
 		return e ? _.push(n.default, i.default) : _.push(t.default, r.default), _.push(a.default), _;
 	}
 	e.default = _;
-})), Qx = /* @__PURE__ */ s(((e) => {
+})), eS = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.dynamicAnchor = void 0;
-	var t = K(), n = Ub(), r = ax(), i = bx(), a = {
+	var t = K(), n = Gb(), r = sx(), i = Sx(), a = {
 		keyword: "$dynamicAnchor",
 		schemaType: "string",
 		code: (e) => o(e, e.schema)
@@ -8862,9 +8878,9 @@ var zb = V.Object({
 		return r.compileSchema.call(a, d), (0, i.getValidate)(e, d);
 	}
 	e.default = a;
-})), $x = /* @__PURE__ */ s(((e) => {
+})), tS = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.dynamicRef = void 0;
-	var t = K(), n = Ub(), r = bx(), i = {
+	var t = K(), n = Gb(), r = Sx(), i = {
 		keyword: "$dynamicRef",
 		schemaType: "string",
 		code: (e) => a(e, e.schema)
@@ -8891,9 +8907,9 @@ var zb = V.Object({
 		}
 	}
 	e.dynamicRef = a, e.default = i;
-})), eS = /* @__PURE__ */ s(((e) => {
+})), nS = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 });
-	var t = Qx(), n = q();
+	var t = eS(), n = q();
 	e.default = {
 		keyword: "$recursiveAnchor",
 		schemaType: "boolean",
@@ -8901,26 +8917,26 @@ var zb = V.Object({
 			e.schema ? (0, t.dynamicAnchor)(e, "") : (0, n.checkStrictMode)(e.it, "$recursiveAnchor: false is ignored");
 		}
 	};
-})), tS = /* @__PURE__ */ s(((e) => {
+})), rS = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 });
-	var t = $x();
+	var t = tS();
 	e.default = {
 		keyword: "$recursiveRef",
 		schemaType: "string",
 		code: (e) => (0, t.dynamicRef)(e, e.schema)
 	};
-})), nS = /* @__PURE__ */ s(((e) => {
+})), iS = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 });
-	var t = Qx(), n = $x(), r = eS(), i = tS();
+	var t = eS(), n = tS(), r = nS(), i = rS();
 	e.default = [
 		t.default,
 		n.default,
 		r.default,
 		i.default
 	];
-})), rS = /* @__PURE__ */ s(((e) => {
+})), aS = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 });
-	var t = Bx();
+	var t = Hx();
 	e.default = {
 		keyword: "dependentRequired",
 		type: "object",
@@ -8928,16 +8944,16 @@ var zb = V.Object({
 		error: t.error,
 		code: (e) => (0, t.validatePropertyDeps)(e)
 	};
-})), iS = /* @__PURE__ */ s(((e) => {
+})), oS = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 });
-	var t = Bx();
+	var t = Hx();
 	e.default = {
 		keyword: "dependentSchemas",
 		type: "object",
 		schemaType: "object",
 		code: (e) => (0, t.validateSchemaDeps)(e)
 	};
-})), aS = /* @__PURE__ */ s(((e) => {
+})), sS = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 });
 	var t = q();
 	e.default = {
@@ -8948,17 +8964,17 @@ var zb = V.Object({
 			n.contains === void 0 && (0, t.checkStrictMode)(r, `"${e}" without "contains" is ignored`);
 		}
 	};
-})), oS = /* @__PURE__ */ s(((e) => {
+})), cS = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 });
-	var t = rS(), n = iS(), r = aS();
+	var t = aS(), n = oS(), r = sS();
 	e.default = [
 		t.default,
 		n.default,
 		r.default
 	];
-})), sS = /* @__PURE__ */ s(((e) => {
+})), lS = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 });
-	var t = K(), n = q(), r = Ub();
+	var t = K(), n = q(), r = Gb();
 	e.default = {
 		keyword: "unevaluatedProperties",
 		type: "object",
@@ -8995,7 +9011,7 @@ var zb = V.Object({
 			}
 		}
 	};
-})), cS = /* @__PURE__ */ s(((e) => {
+})), uS = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 });
 	var t = K(), n = q();
 	e.default = {
@@ -9027,11 +9043,11 @@ var zb = V.Object({
 			}
 		}
 	};
-})), lS = /* @__PURE__ */ s(((e) => {
+})), dS = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 });
-	var t = sS(), n = cS();
+	var t = lS(), n = uS();
 	e.default = [t.default, n.default];
-})), uS = /* @__PURE__ */ s(((e) => {
+})), fS = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 });
 	var t = K();
 	e.default = {
@@ -9106,9 +9122,9 @@ var zb = V.Object({
 			}
 		}
 	};
-})), dS = /* @__PURE__ */ s(((e) => {
-	Object.defineProperty(e, "__esModule", { value: !0 }), e.default = [uS().default];
-})), fS = /* @__PURE__ */ s(((e) => {
+})), pS = /* @__PURE__ */ s(((e) => {
+	Object.defineProperty(e, "__esModule", { value: !0 }), e.default = [fS().default];
+})), mS = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.contentVocabulary = e.metadataVocabulary = void 0, e.metadataVocabulary = [
 		"title",
 		"description",
@@ -9122,9 +9138,9 @@ var zb = V.Object({
 		"contentEncoding",
 		"contentSchema"
 	];
-})), pS = /* @__PURE__ */ s(((e) => {
+})), hS = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 });
-	var t = xx(), n = Px(), r = Zx(), i = nS(), a = oS(), o = lS(), s = dS(), c = fS();
+	var t = Cx(), n = Ix(), r = $x(), i = iS(), a = cS(), o = dS(), s = pS(), c = mS();
 	e.default = [
 		i.default,
 		t.default,
@@ -9136,15 +9152,15 @@ var zb = V.Object({
 		a.default,
 		o.default
 	];
-})), mS = /* @__PURE__ */ s(((e) => {
+})), gS = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.DiscrError = void 0;
 	var t;
 	(function(e) {
 		e.Tag = "tag", e.Mapping = "mapping";
 	})(t || (e.DiscrError = t = {}));
-})), hS = /* @__PURE__ */ s(((e) => {
+})), _S = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 });
-	var t = K(), n = mS(), r = ax(), i = ix(), a = q();
+	var t = K(), n = gS(), r = sx(), i = ox(), a = q();
 	e.default = {
 		keyword: "discriminator",
 		type: "object",
@@ -9212,19 +9228,19 @@ var zb = V.Object({
 			}
 		}
 	};
-})), gS = /* @__PURE__ */ c({
-	$comment: () => wS,
-	$dynamicAnchor: () => bS,
-	$id: () => vS,
-	$schema: () => _S,
-	$vocabulary: () => yS,
-	allOf: () => SS,
-	default: () => ES,
-	properties: () => TS,
-	title: () => xS,
-	type: () => CS
-}), _S, vS, yS, bS, xS, SS, CS, wS, TS, ES, DS = o((() => {
-	_S = "https://json-schema.org/draft/2020-12/schema", vS = "https://json-schema.org/draft/2020-12/schema", yS = {
+})), vS = /* @__PURE__ */ c({
+	$comment: () => ES,
+	$dynamicAnchor: () => SS,
+	$id: () => bS,
+	$schema: () => yS,
+	$vocabulary: () => xS,
+	allOf: () => wS,
+	default: () => OS,
+	properties: () => DS,
+	title: () => CS,
+	type: () => TS
+}), yS, bS, xS, SS, CS, wS, TS, ES, DS, OS, kS = o((() => {
+	yS = "https://json-schema.org/draft/2020-12/schema", bS = "https://json-schema.org/draft/2020-12/schema", xS = {
 		"https://json-schema.org/draft/2020-12/vocab/core": !0,
 		"https://json-schema.org/draft/2020-12/vocab/applicator": !0,
 		"https://json-schema.org/draft/2020-12/vocab/unevaluated": !0,
@@ -9232,7 +9248,7 @@ var zb = V.Object({
 		"https://json-schema.org/draft/2020-12/vocab/meta-data": !0,
 		"https://json-schema.org/draft/2020-12/vocab/format-annotation": !0,
 		"https://json-schema.org/draft/2020-12/vocab/content": !0
-	}, bS = "meta", xS = "Core and Validation specifications meta-schema", SS = [
+	}, SS = "meta", CS = "Core and Validation specifications meta-schema", wS = [
 		{ $ref: "meta/core" },
 		{ $ref: "meta/applicator" },
 		{ $ref: "meta/unevaluated" },
@@ -9240,7 +9256,7 @@ var zb = V.Object({
 		{ $ref: "meta/meta-data" },
 		{ $ref: "meta/format-annotation" },
 		{ $ref: "meta/content" }
-	], CS = ["object", "boolean"], wS = "This meta-schema also defines keywords that have appeared in previous drafts in order to prevent incompatible extensions as they remain in common use.", TS = {
+	], TS = ["object", "boolean"], ES = "This meta-schema also defines keywords that have appeared in previous drafts in order to prevent incompatible extensions as they remain in common use.", DS = {
 		definitions: {
 			$comment: "\"definitions\" has been replaced by \"$defs\".",
 			type: "object",
@@ -9265,29 +9281,29 @@ var zb = V.Object({
 			$ref: "meta/core#/$defs/uriReferenceString",
 			deprecated: !0
 		}
-	}, ES = {
-		$schema: _S,
-		$id: vS,
-		$vocabulary: yS,
-		$dynamicAnchor: bS,
-		title: xS,
-		allOf: SS,
-		type: CS,
-		$comment: wS,
-		properties: TS
+	}, OS = {
+		$schema: yS,
+		$id: bS,
+		$vocabulary: xS,
+		$dynamicAnchor: SS,
+		title: CS,
+		allOf: wS,
+		type: TS,
+		$comment: ES,
+		properties: DS
 	};
-})), OS = /* @__PURE__ */ c({
-	$defs: () => IS,
-	$dynamicAnchor: () => MS,
-	$id: () => AS,
-	$schema: () => kS,
-	$vocabulary: () => jS,
-	default: () => LS,
-	properties: () => FS,
-	title: () => NS,
-	type: () => PS
-}), kS, AS, jS, MS, NS, PS, FS, IS, LS, RS = o((() => {
-	kS = "https://json-schema.org/draft/2020-12/schema", AS = "https://json-schema.org/draft/2020-12/meta/applicator", jS = { "https://json-schema.org/draft/2020-12/vocab/applicator": !0 }, MS = "meta", NS = "Applicator vocabulary meta-schema", PS = ["object", "boolean"], FS = {
+})), AS = /* @__PURE__ */ c({
+	$defs: () => RS,
+	$dynamicAnchor: () => PS,
+	$id: () => MS,
+	$schema: () => jS,
+	$vocabulary: () => NS,
+	default: () => zS,
+	properties: () => LS,
+	title: () => FS,
+	type: () => IS
+}), jS, MS, NS, PS, FS, IS, LS, RS, zS, BS = o((() => {
+	jS = "https://json-schema.org/draft/2020-12/schema", MS = "https://json-schema.org/draft/2020-12/meta/applicator", NS = { "https://json-schema.org/draft/2020-12/vocab/applicator": !0 }, PS = "meta", FS = "Applicator vocabulary meta-schema", IS = ["object", "boolean"], LS = {
 		prefixItems: { $ref: "#/$defs/schemaArray" },
 		items: { $dynamicRef: "#meta" },
 		contains: { $dynamicRef: "#meta" },
@@ -9316,77 +9332,77 @@ var zb = V.Object({
 		anyOf: { $ref: "#/$defs/schemaArray" },
 		oneOf: { $ref: "#/$defs/schemaArray" },
 		not: { $dynamicRef: "#meta" }
-	}, IS = { schemaArray: {
+	}, RS = { schemaArray: {
 		type: "array",
 		minItems: 1,
 		items: { $dynamicRef: "#meta" }
-	} }, LS = {
-		$schema: kS,
-		$id: AS,
-		$vocabulary: jS,
-		$dynamicAnchor: MS,
-		title: NS,
-		type: PS,
-		properties: FS,
-		$defs: IS
+	} }, zS = {
+		$schema: jS,
+		$id: MS,
+		$vocabulary: NS,
+		$dynamicAnchor: PS,
+		title: FS,
+		type: IS,
+		properties: LS,
+		$defs: RS
 	};
-})), zS = /* @__PURE__ */ c({
-	$dynamicAnchor: () => US,
-	$id: () => VS,
-	$schema: () => BS,
-	$vocabulary: () => HS,
-	default: () => qS,
-	properties: () => KS,
-	title: () => WS,
-	type: () => GS
-}), BS, VS, HS, US, WS, GS, KS, qS, JS = o((() => {
-	BS = "https://json-schema.org/draft/2020-12/schema", VS = "https://json-schema.org/draft/2020-12/meta/unevaluated", HS = { "https://json-schema.org/draft/2020-12/vocab/unevaluated": !0 }, US = "meta", WS = "Unevaluated applicator vocabulary meta-schema", GS = ["object", "boolean"], KS = {
+})), VS = /* @__PURE__ */ c({
+	$dynamicAnchor: () => GS,
+	$id: () => US,
+	$schema: () => HS,
+	$vocabulary: () => WS,
+	default: () => YS,
+	properties: () => JS,
+	title: () => KS,
+	type: () => qS
+}), HS, US, WS, GS, KS, qS, JS, YS, XS = o((() => {
+	HS = "https://json-schema.org/draft/2020-12/schema", US = "https://json-schema.org/draft/2020-12/meta/unevaluated", WS = { "https://json-schema.org/draft/2020-12/vocab/unevaluated": !0 }, GS = "meta", KS = "Unevaluated applicator vocabulary meta-schema", qS = ["object", "boolean"], JS = {
 		unevaluatedItems: { $dynamicRef: "#meta" },
 		unevaluatedProperties: { $dynamicRef: "#meta" }
-	}, qS = {
-		$schema: BS,
-		$id: VS,
-		$vocabulary: HS,
-		$dynamicAnchor: US,
-		title: WS,
-		type: GS,
-		properties: KS
+	}, YS = {
+		$schema: HS,
+		$id: US,
+		$vocabulary: WS,
+		$dynamicAnchor: GS,
+		title: KS,
+		type: qS,
+		properties: JS
 	};
-})), YS = /* @__PURE__ */ c({
-	$dynamicAnchor: () => $S,
-	$id: () => ZS,
-	$schema: () => XS,
-	$vocabulary: () => QS,
-	default: () => rC,
-	properties: () => nC,
-	title: () => eC,
-	type: () => tC
-}), XS, ZS, QS, $S, eC, tC, nC, rC, iC = o((() => {
-	XS = "https://json-schema.org/draft/2020-12/schema", ZS = "https://json-schema.org/draft/2020-12/meta/content", QS = { "https://json-schema.org/draft/2020-12/vocab/content": !0 }, $S = "meta", eC = "Content vocabulary meta-schema", tC = ["object", "boolean"], nC = {
+})), ZS = /* @__PURE__ */ c({
+	$dynamicAnchor: () => tC,
+	$id: () => $S,
+	$schema: () => QS,
+	$vocabulary: () => eC,
+	default: () => aC,
+	properties: () => iC,
+	title: () => nC,
+	type: () => rC
+}), QS, $S, eC, tC, nC, rC, iC, aC, oC = o((() => {
+	QS = "https://json-schema.org/draft/2020-12/schema", $S = "https://json-schema.org/draft/2020-12/meta/content", eC = { "https://json-schema.org/draft/2020-12/vocab/content": !0 }, tC = "meta", nC = "Content vocabulary meta-schema", rC = ["object", "boolean"], iC = {
 		contentEncoding: { type: "string" },
 		contentMediaType: { type: "string" },
 		contentSchema: { $dynamicRef: "#meta" }
-	}, rC = {
-		$schema: XS,
-		$id: ZS,
-		$vocabulary: QS,
-		$dynamicAnchor: $S,
-		title: eC,
-		type: tC,
-		properties: nC
+	}, aC = {
+		$schema: QS,
+		$id: $S,
+		$vocabulary: eC,
+		$dynamicAnchor: tC,
+		title: nC,
+		type: rC,
+		properties: iC
 	};
-})), aC = /* @__PURE__ */ c({
-	$defs: () => pC,
-	$dynamicAnchor: () => lC,
-	$id: () => sC,
-	$schema: () => oC,
-	$vocabulary: () => cC,
-	default: () => mC,
-	properties: () => fC,
-	title: () => uC,
-	type: () => dC
-}), oC, sC, cC, lC, uC, dC, fC, pC, mC, hC = o((() => {
-	oC = "https://json-schema.org/draft/2020-12/schema", sC = "https://json-schema.org/draft/2020-12/meta/core", cC = { "https://json-schema.org/draft/2020-12/vocab/core": !0 }, lC = "meta", uC = "Core vocabulary meta-schema", dC = ["object", "boolean"], fC = {
+})), sC = /* @__PURE__ */ c({
+	$defs: () => hC,
+	$dynamicAnchor: () => dC,
+	$id: () => lC,
+	$schema: () => cC,
+	$vocabulary: () => uC,
+	default: () => gC,
+	properties: () => mC,
+	title: () => fC,
+	type: () => pC
+}), cC, lC, uC, dC, fC, pC, mC, hC, gC, _C = o((() => {
+	cC = "https://json-schema.org/draft/2020-12/schema", lC = "https://json-schema.org/draft/2020-12/meta/core", uC = { "https://json-schema.org/draft/2020-12/vocab/core": !0 }, dC = "meta", fC = "Core vocabulary meta-schema", pC = ["object", "boolean"], mC = {
 		$id: {
 			$ref: "#/$defs/uriReferenceString",
 			$comment: "Non-empty fragments not allowed.",
@@ -9407,7 +9423,7 @@ var zb = V.Object({
 			type: "object",
 			additionalProperties: { $dynamicRef: "#meta" }
 		}
-	}, pC = {
+	}, hC = {
 		anchorString: {
 			type: "string",
 			pattern: "^[A-Za-z_][-A-Za-z0-9._]*$"
@@ -9420,46 +9436,46 @@ var zb = V.Object({
 			type: "string",
 			format: "uri-reference"
 		}
-	}, mC = {
-		$schema: oC,
-		$id: sC,
-		$vocabulary: cC,
-		$dynamicAnchor: lC,
-		title: uC,
-		type: dC,
-		properties: fC,
-		$defs: pC
+	}, gC = {
+		$schema: cC,
+		$id: lC,
+		$vocabulary: uC,
+		$dynamicAnchor: dC,
+		title: fC,
+		type: pC,
+		properties: mC,
+		$defs: hC
 	};
-})), gC = /* @__PURE__ */ c({
-	$dynamicAnchor: () => bC,
-	$id: () => vC,
-	$schema: () => _C,
-	$vocabulary: () => yC,
-	default: () => wC,
-	properties: () => CC,
-	title: () => xC,
-	type: () => SC
-}), _C, vC, yC, bC, xC, SC, CC, wC, TC = o((() => {
-	_C = "https://json-schema.org/draft/2020-12/schema", vC = "https://json-schema.org/draft/2020-12/meta/format-annotation", yC = { "https://json-schema.org/draft/2020-12/vocab/format-annotation": !0 }, bC = "meta", xC = "Format vocabulary meta-schema for annotation results", SC = ["object", "boolean"], CC = { format: { type: "string" } }, wC = {
-		$schema: _C,
-		$id: vC,
-		$vocabulary: yC,
-		$dynamicAnchor: bC,
-		title: xC,
-		type: SC,
-		properties: CC
+})), vC = /* @__PURE__ */ c({
+	$dynamicAnchor: () => SC,
+	$id: () => bC,
+	$schema: () => yC,
+	$vocabulary: () => xC,
+	default: () => EC,
+	properties: () => TC,
+	title: () => CC,
+	type: () => wC
+}), yC, bC, xC, SC, CC, wC, TC, EC, DC = o((() => {
+	yC = "https://json-schema.org/draft/2020-12/schema", bC = "https://json-schema.org/draft/2020-12/meta/format-annotation", xC = { "https://json-schema.org/draft/2020-12/vocab/format-annotation": !0 }, SC = "meta", CC = "Format vocabulary meta-schema for annotation results", wC = ["object", "boolean"], TC = { format: { type: "string" } }, EC = {
+		$schema: yC,
+		$id: bC,
+		$vocabulary: xC,
+		$dynamicAnchor: SC,
+		title: CC,
+		type: wC,
+		properties: TC
 	};
-})), EC = /* @__PURE__ */ c({
-	$dynamicAnchor: () => AC,
-	$id: () => OC,
-	$schema: () => DC,
-	$vocabulary: () => kC,
-	default: () => PC,
-	properties: () => NC,
-	title: () => jC,
-	type: () => MC
-}), DC, OC, kC, AC, jC, MC, NC, PC, FC = o((() => {
-	DC = "https://json-schema.org/draft/2020-12/schema", OC = "https://json-schema.org/draft/2020-12/meta/meta-data", kC = { "https://json-schema.org/draft/2020-12/vocab/meta-data": !0 }, AC = "meta", jC = "Meta-data vocabulary meta-schema", MC = ["object", "boolean"], NC = {
+})), OC = /* @__PURE__ */ c({
+	$dynamicAnchor: () => MC,
+	$id: () => AC,
+	$schema: () => kC,
+	$vocabulary: () => jC,
+	default: () => IC,
+	properties: () => FC,
+	title: () => NC,
+	type: () => PC
+}), kC, AC, jC, MC, NC, PC, FC, IC, LC = o((() => {
+	kC = "https://json-schema.org/draft/2020-12/schema", AC = "https://json-schema.org/draft/2020-12/meta/meta-data", jC = { "https://json-schema.org/draft/2020-12/vocab/meta-data": !0 }, MC = "meta", NC = "Meta-data vocabulary meta-schema", PC = ["object", "boolean"], FC = {
 		title: { type: "string" },
 		description: { type: "string" },
 		default: !0,
@@ -9479,27 +9495,27 @@ var zb = V.Object({
 			type: "array",
 			items: !0
 		}
-	}, PC = {
-		$schema: DC,
-		$id: OC,
-		$vocabulary: kC,
-		$dynamicAnchor: AC,
-		title: jC,
-		type: MC,
-		properties: NC
+	}, IC = {
+		$schema: kC,
+		$id: AC,
+		$vocabulary: jC,
+		$dynamicAnchor: MC,
+		title: NC,
+		type: PC,
+		properties: FC
 	};
-})), IC = /* @__PURE__ */ c({
-	$defs: () => WC,
-	$dynamicAnchor: () => BC,
-	$id: () => RC,
-	$schema: () => LC,
-	$vocabulary: () => zC,
-	default: () => GC,
-	properties: () => UC,
-	title: () => VC,
-	type: () => HC
-}), LC, RC, zC, BC, VC, HC, UC, WC, GC, KC = o((() => {
-	LC = "https://json-schema.org/draft/2020-12/schema", RC = "https://json-schema.org/draft/2020-12/meta/validation", zC = { "https://json-schema.org/draft/2020-12/vocab/validation": !0 }, BC = "meta", VC = "Validation vocabulary meta-schema", HC = ["object", "boolean"], UC = {
+})), RC = /* @__PURE__ */ c({
+	$defs: () => KC,
+	$dynamicAnchor: () => HC,
+	$id: () => BC,
+	$schema: () => zC,
+	$vocabulary: () => VC,
+	default: () => qC,
+	properties: () => GC,
+	title: () => UC,
+	type: () => WC
+}), zC, BC, VC, HC, UC, WC, GC, KC, qC, JC = o((() => {
+	zC = "https://json-schema.org/draft/2020-12/schema", BC = "https://json-schema.org/draft/2020-12/meta/validation", VC = { "https://json-schema.org/draft/2020-12/vocab/validation": !0 }, HC = "meta", UC = "Validation vocabulary meta-schema", WC = ["object", "boolean"], GC = {
 		type: { anyOf: [{ $ref: "#/$defs/simpleTypes" }, {
 			type: "array",
 			items: { $ref: "#/$defs/simpleTypes" },
@@ -9543,7 +9559,7 @@ var zb = V.Object({
 			type: "object",
 			additionalProperties: { $ref: "#/$defs/stringArray" }
 		}
-	}, WC = {
+	}, KC = {
 		nonNegativeInteger: {
 			type: "integer",
 			minimum: 0
@@ -9567,19 +9583,19 @@ var zb = V.Object({
 			uniqueItems: !0,
 			default: []
 		}
-	}, GC = {
-		$schema: LC,
-		$id: RC,
-		$vocabulary: zC,
-		$dynamicAnchor: BC,
-		title: VC,
-		type: HC,
-		properties: UC,
-		$defs: WC
+	}, qC = {
+		$schema: zC,
+		$id: BC,
+		$vocabulary: VC,
+		$dynamicAnchor: HC,
+		title: UC,
+		type: WC,
+		properties: GC,
+		$defs: KC
 	};
-})), qC = /* @__PURE__ */ s(((e) => {
+})), YC = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 });
-	var t = (DS(), d(gS).default), n = (RS(), d(OS).default), r = (JS(), d(zS).default), i = (iC(), d(YS).default), a = (hC(), d(aC).default), o = (TC(), d(gC).default), s = (FC(), d(EC).default), c = (KC(), d(IC).default), l = ["/properties"];
+	var t = (kS(), d(vS).default), n = (BS(), d(AS).default), r = (XS(), d(VS).default), i = (oC(), d(ZS).default), a = (_C(), d(sC).default), o = (DC(), d(vC).default), s = (LC(), d(OC).default), c = (JC(), d(RC).default), l = ["/properties"];
 	function u(e) {
 		return [
 			t,
@@ -9596,9 +9612,9 @@ var zb = V.Object({
 		}
 	}
 	e.default = u;
-})), JC = /* @__PURE__ */ s(((e, t) => {
+})), XC = /* @__PURE__ */ s(((e, t) => {
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.MissingRefError = e.ValidationError = e.CodeGen = e.Name = e.nil = e.stringify = e.str = e._ = e.KeywordCxt = e.Ajv2020 = void 0;
-	var n = vx(), r = pS(), i = hS(), a = qC(), o = "https://json-schema.org/draft/2020-12/schema", s = class extends n.default {
+	var n = bx(), r = hS(), i = _S(), a = YC(), o = "https://json-schema.org/draft/2020-12/schema", s = class extends n.default {
 		constructor(e = {}) {
 			super({
 				...e,
@@ -9620,7 +9636,7 @@ var zb = V.Object({
 		}
 	};
 	e.Ajv2020 = s, t.exports = e = s, t.exports.Ajv2020 = s, Object.defineProperty(e, "__esModule", { value: !0 }), e.default = s;
-	var c = nx();
+	var c = ix();
 	Object.defineProperty(e, "KeywordCxt", {
 		enumerable: !0,
 		get: function() {
@@ -9659,21 +9675,21 @@ var zb = V.Object({
 			return l.CodeGen;
 		}
 	});
-	var u = rx();
+	var u = ax();
 	Object.defineProperty(e, "ValidationError", {
 		enumerable: !0,
 		get: function() {
 			return u.default;
 		}
 	});
-	var d = ix();
+	var d = ox();
 	Object.defineProperty(e, "MissingRefError", {
 		enumerable: !0,
 		get: function() {
 			return d.default;
 		}
 	});
-})), YC = /* @__PURE__ */ s(((e) => {
+})), ZC = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.formatNames = e.fastFormats = e.fullFormats = void 0;
 	function t(e, t) {
 		return {
@@ -9825,9 +9841,9 @@ var zb = V.Object({
 			return !1;
 		}
 	}
-})), XC = /* @__PURE__ */ s(((e) => {
+})), QC = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 });
-	var t = xx(), n = Px(), r = Zx(), i = dS(), a = fS();
+	var t = Cx(), n = Ix(), r = $x(), i = pS(), a = mS();
 	e.default = [
 		t.default,
 		n.default,
@@ -9836,16 +9852,16 @@ var zb = V.Object({
 		a.metadataVocabulary,
 		a.contentVocabulary
 	];
-})), ZC = /* @__PURE__ */ c({
-	$id: () => $C,
-	$schema: () => QC,
-	default: () => iw,
-	definitions: () => tw,
-	properties: () => rw,
-	title: () => ew,
-	type: () => nw
-}), QC, $C, ew, tw, nw, rw, iw, aw = o((() => {
-	QC = "http://json-schema.org/draft-07/schema#", $C = "http://json-schema.org/draft-07/schema#", ew = "Core schema meta-schema", tw = {
+})), $C = /* @__PURE__ */ c({
+	$id: () => tw,
+	$schema: () => ew,
+	default: () => ow,
+	definitions: () => rw,
+	properties: () => aw,
+	title: () => nw,
+	type: () => iw
+}), ew, tw, nw, rw, iw, aw, ow, sw = o((() => {
+	ew = "http://json-schema.org/draft-07/schema#", tw = "http://json-schema.org/draft-07/schema#", nw = "Core schema meta-schema", rw = {
 		schemaArray: {
 			type: "array",
 			minItems: 1,
@@ -9871,7 +9887,7 @@ var zb = V.Object({
 			uniqueItems: !0,
 			default: []
 		}
-	}, nw = ["object", "boolean"], rw = {
+	}, iw = ["object", "boolean"], aw = {
 		$id: {
 			type: "string",
 			format: "uri-reference"
@@ -9970,18 +9986,18 @@ var zb = V.Object({
 		anyOf: { $ref: "#/definitions/schemaArray" },
 		oneOf: { $ref: "#/definitions/schemaArray" },
 		not: { $ref: "#" }
-	}, iw = {
-		$schema: QC,
-		$id: $C,
-		title: ew,
-		definitions: tw,
-		type: nw,
-		properties: rw,
+	}, ow = {
+		$schema: ew,
+		$id: tw,
+		title: nw,
+		definitions: rw,
+		type: iw,
+		properties: aw,
 		default: !0
 	};
-})), ow = /* @__PURE__ */ s(((e, t) => {
+})), cw = /* @__PURE__ */ s(((e, t) => {
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.MissingRefError = e.ValidationError = e.CodeGen = e.Name = e.nil = e.stringify = e.str = e._ = e.KeywordCxt = e.Ajv = void 0;
-	var n = vx(), r = XC(), i = hS(), a = (aw(), d(ZC).default), o = ["/properties"], s = "http://json-schema.org/draft-07/schema", c = class extends n.default {
+	var n = bx(), r = QC(), i = _S(), a = (sw(), d($C).default), o = ["/properties"], s = "http://json-schema.org/draft-07/schema", c = class extends n.default {
 		_addVocabularies() {
 			super._addVocabularies(), r.default.forEach((e) => this.addVocabulary(e)), this.opts.discriminator && this.addKeyword(i.default);
 		}
@@ -9995,7 +10011,7 @@ var zb = V.Object({
 		}
 	};
 	e.Ajv = c, t.exports = e = c, t.exports.Ajv = c, Object.defineProperty(e, "__esModule", { value: !0 }), e.default = c;
-	var l = nx();
+	var l = ix();
 	Object.defineProperty(e, "KeywordCxt", {
 		enumerable: !0,
 		get: function() {
@@ -10034,23 +10050,23 @@ var zb = V.Object({
 			return u.CodeGen;
 		}
 	});
-	var f = rx();
+	var f = ax();
 	Object.defineProperty(e, "ValidationError", {
 		enumerable: !0,
 		get: function() {
 			return f.default;
 		}
 	});
-	var p = ix();
+	var p = ox();
 	Object.defineProperty(e, "MissingRefError", {
 		enumerable: !0,
 		get: function() {
 			return p.default;
 		}
 	});
-})), sw = /* @__PURE__ */ s(((e) => {
+})), lw = /* @__PURE__ */ s(((e) => {
 	Object.defineProperty(e, "__esModule", { value: !0 }), e.formatLimitDefinition = void 0;
-	var t = ow(), n = K(), r = n.operators, i = {
+	var t = cw(), n = K(), r = n.operators, i = {
 		formatMaximum: {
 			okStr: "<=",
 			ok: r.LTE,
@@ -10110,9 +10126,9 @@ var zb = V.Object({
 		},
 		dependencies: ["format"]
 	}, e.default = (t) => (t.addKeyword(e.formatLimitDefinition), t);
-})), cw = /* @__PURE__ */ s(((e, t) => {
+})), uw = /* @__PURE__ */ s(((e, t) => {
 	Object.defineProperty(e, "__esModule", { value: !0 });
-	var n = YC(), r = sw(), i = K(), a = new i.Name("fullFormats"), o = new i.Name("fastFormats"), s = (e, t = { keywords: !0 }) => {
+	var n = ZC(), r = lw(), i = K(), a = new i.Name("fullFormats"), o = new i.Name("fastFormats"), s = (e, t = { keywords: !0 }) => {
 		if (Array.isArray(t)) return c(e, t, n.fullFormats, a), e;
 		let [i, s] = t.mode === "fast" ? [n.fastFormats, o] : [n.fullFormats, a];
 		return c(e, t.formats || n.formatNames, i, s), t.keywords && (0, r.default)(e), e;
@@ -10128,15 +10144,15 @@ var zb = V.Object({
 		for (let r of t) e.addFormat(r, n[r]);
 	}
 	t.exports = e = s, Object.defineProperty(e, "__esModule", { value: !0 }), e.default = s;
-})), lw = JC(), uw = /* @__PURE__ */ u(cw(), 1), dw = () => {
-	let e = new lw.Ajv2020({
+})), dw = XC(), fw = /* @__PURE__ */ u(uw(), 1), pw = () => {
+	let e = new dw.Ajv2020({
 		strict: !0,
 		allErrors: !0,
 		keywords: ["x-homeplan"],
 		strictTypes: !1
 	});
-	return (0, uw.default)(e), e;
-}, fw, pw = () => (fw ??= dw(), fw), mw = (e) => pw().compile(e), hw = {
+	return (0, fw.default)(e), e;
+}, mw, hw = () => (mw ??= pw(), mw), gw = (e) => hw().compile(e), _w = {
 	general: { title: "General" },
 	template: { title: "Template" },
 	staircase: { title: "Staircase" },
@@ -10150,10 +10166,10 @@ var zb = V.Object({
 	profile: { title: "Profile" },
 	materials: { title: "Materials" },
 	ribs: { title: "Ribs" }
-}, gw = Object.keys(hw), _w = (...e) => ({ groups: [...e].sort((e, t) => gw.indexOf(e) - gw.indexOf(t)).map((e) => ({
+}, vw = Object.keys(_w), yw = (...e) => ({ groups: [...e].sort((e, t) => vw.indexOf(e) - vw.indexOf(t)).map((e) => ({
 	id: e,
-	title: hw[e].title
-})) }), vw = V.Object({
+	title: _w[e].title
+})) }), bw = V.Object({
 	id: oy,
 	type: V.Literal("rectangle", {
 		readOnly: !0,
@@ -10188,8 +10204,8 @@ var zb = V.Object({
 }, {
 	additionalProperties: !1,
 	title: "Rectangle",
-	...H({ groups: _w("placement", "size").groups })
-}), yw = V.Object({
+	...H({ groups: yw("placement", "size").groups })
+}), xw = V.Object({
 	id: oy,
 	type: V.Literal("circle", {
 		readOnly: !0,
@@ -10210,12 +10226,12 @@ var zb = V.Object({
 }, {
 	additionalProperties: !1,
 	title: "Circle",
-	...H({ groups: _w("placement", "size").groups })
-}), bw = V.Object({
+	...H({ groups: yw("placement", "size").groups })
+}), Sw = V.Object({
 	id: oy,
 	x: V.Number(),
 	y: V.Number()
-}, { additionalProperties: !1 }), xw = V.Object({
+}, { additionalProperties: !1 }), Cw = V.Object({
 	id: oy,
 	type: V.Literal("polygon", {
 		readOnly: !0,
@@ -10231,19 +10247,19 @@ var zb = V.Object({
 		group: "placement",
 		order: 2
 	}),
-	vertices: V.Array(bw, {
+	vertices: V.Array(Sw, {
 		minItems: 3,
 		...H({ hidden: !0 })
 	})
 }, {
 	additionalProperties: !1,
 	title: "Polygon",
-	...H({ groups: _w("placement", "size").groups })
-}), Sw = V.Union([
-	vw,
-	yw,
-	xw
-]), Cw = V.Object({
+	...H({ groups: yw("placement", "size").groups })
+}), ww = V.Union([
+	bw,
+	xw,
+	Cw
+]), Tw = V.Object({
 	id: oy,
 	name: dy(),
 	positionMm: cy({
@@ -10261,7 +10277,7 @@ var zb = V.Object({
 		group: "appearance",
 		order: 1
 	}),
-	shapes: V.Array(Sw, {
+	shapes: V.Array(ww, {
 		minItems: 1,
 		...H({ hidden: !0 })
 	}),
@@ -10269,8 +10285,8 @@ var zb = V.Object({
 }, {
 	additionalProperties: !1,
 	title: "Carpet",
-	...H({ groups: _w("general", "placement", "appearance").groups })
-}), ww = {
+	...H({ groups: yw("general", "placement", "appearance").groups })
+}), Ew = {
 	kind: uy([["swirl", "Swirl"], ["vapour", "Vapour"]], {
 		title: "Kind",
 		default: "swirl",
@@ -10337,14 +10353,14 @@ var zb = V.Object({
 		group: "appearance",
 		order: 2
 	})
-}, Tw = V.Object({
+}, Dw = V.Object({
 	id: oy,
-	...ww
+	...Ew
 }, {
 	additionalProperties: !1,
 	title: "Effect",
-	...H({ groups: _w("general", "placement", "appearance").groups })
-}), Ew = V.Object(ww, { additionalProperties: !1 }), Dw = {
+	...H({ groups: yw("general", "placement", "appearance").groups })
+}), Ow = V.Object(Ew, { additionalProperties: !1 }), kw = {
 	templateId: V.String({
 		minLength: 1,
 		readOnly: !0,
@@ -10362,13 +10378,13 @@ var zb = V.Object({
 	parameters: vy,
 	flip: gy,
 	materialOverrides: xy
-}, Ow = H({ groups: _w("general", "placement", "template", "appearance").groups }), kw = H({ groups: _w("general", "placement", "staircase", "template", "appearance").groups }), Aw = {
+}, Aw = H({ groups: yw("general", "placement", "template", "appearance").groups }), jw = H({ groups: yw("general", "placement", "staircase", "template", "appearance").groups }), Mw = {
 	property: "floorCut",
 	equals: "stair"
-}, jw = V.Object({
+}, Nw = V.Object({
 	id: oy,
 	name: dy(),
-	...Dw,
+	...kw,
 	placement: V.Object({
 		distanceAlongWallMm: U({
 			title: "Along wall",
@@ -10389,11 +10405,11 @@ var zb = V.Object({
 }, {
 	additionalProperties: !1,
 	title: "Opening",
-	...Ow
-}), Mw = V.Object({
+	...Aw
+}), Pw = V.Object({
 	id: oy,
 	name: dy(),
-	...Dw,
+	...kw,
 	attachment: V.Object({
 		host: uy([
 			["floor", "Floor"],
@@ -10470,7 +10486,7 @@ var zb = V.Object({
 			editor: "toggle",
 			group: "staircase",
 			order: 1,
-			visibleWhen: Aw
+			visibleWhen: Mw
 		})
 	})),
 	cutFloorBelow: V.Optional(V.Boolean({
@@ -10481,18 +10497,18 @@ var zb = V.Object({
 			editor: "toggle",
 			group: "staircase",
 			order: 2,
-			visibleWhen: Aw
+			visibleWhen: Mw
 		})
 	})),
-	effects: V.Optional(V.Array(Tw, {
+	effects: V.Optional(V.Array(Dw, {
 		maxItems: 8,
 		...H({ hidden: !0 })
 	}))
 }, {
 	additionalProperties: !1,
 	title: "Object",
-	...kw
-}), Nw = [
+	...jw
+}), Fw = [
 	"tungsten",
 	"halogen",
 	"ledWarm",
@@ -10500,7 +10516,7 @@ var zb = V.Object({
 	"ledCool",
 	"fluorescent",
 	"neon"
-], Pw = [
+], Iw = [
 	{
 		watts: 2.5,
 		lumens: 250
@@ -10529,7 +10545,7 @@ var zb = V.Object({
 		watts: 24,
 		lumens: 2600
 	}
-], Fw = {
+], Lw = {
 	tungsten: {
 		title: "Tungsten",
 		kelvin: 2700,
@@ -10600,7 +10616,7 @@ var zb = V.Object({
 			1,
 			1
 		],
-		presets: Pw
+		presets: Iw
 	},
 	ledNeutral: {
 		title: "LED neutral white",
@@ -10610,7 +10626,7 @@ var zb = V.Object({
 			1,
 			1
 		],
-		presets: Pw
+		presets: Iw
 	},
 	ledCool: {
 		title: "LED cool daylight",
@@ -10620,7 +10636,7 @@ var zb = V.Object({
 			1,
 			1
 		],
-		presets: Pw
+		presets: Iw
 	},
 	fluorescent: {
 		title: "Fluorescent",
@@ -10693,11 +10709,11 @@ var zb = V.Object({
 			}
 		]
 	}
-}, Iw = Nw.map((e) => [e, Fw[e].title]), Lw = [
+}, Rw = Fw.map((e) => [e, Lw[e].title]), zw = [
 	["fixedWhite", "Fixed white"],
 	["colorTemperature", "Color temperature"],
 	["rgb", "RGB"]
-], Rw = V.Object({
+], Bw = V.Object({
 	id: oy,
 	name: dy(),
 	fixture: V.Union([_y, V.Null()], {
@@ -10848,7 +10864,7 @@ var zb = V.Object({
 			order: 2
 		})
 	}),
-	lampType: V.Optional(uy(Iw, {
+	lampType: V.Optional(uy(Rw, {
 		title: "Lamp type",
 		group: "light",
 		order: 0,
@@ -10865,7 +10881,7 @@ var zb = V.Object({
 			order: .5
 		})
 	})),
-	renderCapabilities: V.Object({ colorModes: V.Array(uy(Lw), {
+	renderCapabilities: V.Object({ colorModes: V.Array(uy(zw), {
 		title: "Color modes",
 		minItems: 1,
 		uniqueItems: !0,
@@ -10914,7 +10930,7 @@ var zb = V.Object({
 			})
 		}),
 		color: V.Object({
-			mode: uy(Lw, {
+			mode: uy(zw, {
 				title: "Color mode",
 				default: "fixedWhite",
 				order: 1,
@@ -10962,8 +10978,8 @@ var zb = V.Object({
 }, {
 	additionalProperties: !1,
 	title: "Light",
-	...H({ groups: _w("general", "emitter", "placement", "light").groups })
-}), zw = V.Object({
+	...H({ groups: yw("general", "emitter", "placement", "light").groups })
+}), Vw = V.Object({
 	id: oy,
 	name: dy(),
 	memberIds: V.Array(V.String(), {
@@ -10980,8 +10996,8 @@ var zb = V.Object({
 }, {
 	additionalProperties: !1,
 	title: "Light group",
-	...H({ groups: _w("general").groups })
-}), Bw = V.Object({
+	...H({ groups: yw("general").groups })
+}), Hw = V.Object({
 	id: oy,
 	name: dy(),
 	memberIds: V.Array(V.String(), {
@@ -11000,18 +11016,18 @@ var zb = V.Object({
 }, {
 	additionalProperties: !1,
 	title: "Object group",
-	...H({ groups: _w("general").groups })
-}), Vw = V.Object({
+	...H({ groups: yw("general").groups })
+}), Uw = V.Object({
 	shapeId: V.String(),
 	edge: V.String({ minLength: 1 })
 }, {
 	additionalProperties: !1,
 	readOnly: !0,
 	...H({ hidden: !0 })
-}), Hw = V.Object({
+}), Ww = V.Object({
 	anchor: V.Union([V.Literal("start"), V.Literal("end")]),
 	offsetMm: V.Number({ minimum: 0 })
-}, { additionalProperties: !1 }), Uw = V.Object({
+}, { additionalProperties: !1 }), Gw = V.Object({
 	id: oy,
 	name: dy({
 		group: "general",
@@ -11036,7 +11052,7 @@ var zb = V.Object({
 		group: "appearance",
 		order: 1
 	}),
-	shapes: V.Array(Sw, {
+	shapes: V.Array(ww, {
 		minItems: 1,
 		...H({ hidden: !0 })
 	}),
@@ -11044,13 +11060,13 @@ var zb = V.Object({
 }, {
 	additionalProperties: !1,
 	title: "Wall feature",
-	...H({ groups: _w("general", "placement", "size", "appearance").groups })
-}), Ww = V.Object({
+	...H({ groups: yw("general", "placement", "size", "appearance").groups })
+}), Kw = V.Object({
 	id: oy,
-	sourceEdge: Vw,
+	sourceEdge: Uw,
 	spanMm: V.Object({
-		start: Hw,
-		end: Hw
+		start: Ww,
+		end: Ww
 	}, {
 		additionalProperties: !1,
 		...H({ hidden: !0 })
@@ -11105,27 +11121,27 @@ var zb = V.Object({
 		title: "Materials",
 		...H({ group: "appearance" })
 	}),
-	objects: V.Array(jw, { ...H({ hidden: !0 }) }),
-	reliefs: V.Optional(V.Array(Uw, { ...H({ hidden: !0 }) })),
+	objects: V.Array(Nw, { ...H({ hidden: !0 }) }),
+	reliefs: V.Optional(V.Array(Gw, { ...H({ hidden: !0 }) })),
 	hidden: fy
 }, {
 	additionalProperties: !1,
 	title: "Wall",
-	...H({ groups: _w("general", "placement", "size", "appearance").groups })
-}), Gw = V.Object({
+	...H({ groups: yw("general", "placement", "size", "appearance").groups })
+}), qw = V.Object({
 	id: oy,
 	material: hy({
 		title: "Flooring",
 		group: "appearance",
 		order: 1
 	}),
-	shapes: V.Array(Sw, { ...H({ hidden: !0 }) }),
-	carpets: V.Array(Cw, { ...H({ hidden: !0 }) })
+	shapes: V.Array(ww, { ...H({ hidden: !0 }) }),
+	carpets: V.Array(Tw, { ...H({ hidden: !0 }) })
 }, {
 	additionalProperties: !1,
 	title: "Floor",
-	...H({ groups: _w("appearance").groups })
-}), Kw = V.Object({
+	...H({ groups: yw("appearance").groups })
+}), Jw = V.Object({
 	id: oy,
 	kind: V.Optional(V.Literal("yard", {
 		readOnly: !0,
@@ -11160,17 +11176,17 @@ var zb = V.Object({
 		group: "placement",
 		order: 2
 	}),
-	floor: Gw,
-	walls: V.Array(Ww, { ...H({ hidden: !0 }) }),
-	objects: V.Array(Mw, { ...H({ hidden: !0 }) }),
-	objectGroups: V.Optional(V.Array(Bw, { ...H({ hidden: !0 }) })),
-	lights: V.Array(Rw, { ...H({ hidden: !0 }) }),
+	floor: qw,
+	walls: V.Array(Kw, { ...H({ hidden: !0 }) }),
+	objects: V.Array(Pw, { ...H({ hidden: !0 }) }),
+	objectGroups: V.Optional(V.Array(Hw, { ...H({ hidden: !0 }) })),
+	lights: V.Array(Bw, { ...H({ hidden: !0 }) }),
 	hidden: fy
 }, {
 	additionalProperties: !1,
 	title: "Area",
-	...H({ groups: _w("general", "placement", "appearance").groups })
-}), qw = V.Object({
+	...H({ groups: yw("general", "placement", "appearance").groups })
+}), Yw = V.Object({
 	id: oy,
 	kind: uy([["line", "Guide line"], ["point", "Guide point"]], {
 		title: "Kind",
@@ -11192,18 +11208,18 @@ var zb = V.Object({
 }, {
 	additionalProperties: !1,
 	title: "Guide",
-	...H({ groups: _w("general").groups })
-}), Jw = 3e4, Yw = 3e4, Xw = 1e3, Zw = V.String({
+	...H({ groups: yw("general").groups })
+}), Xw = 3e4, Zw = 3e4, Qw = 1e3, $w = V.String({
 	pattern: ay,
 	...H({ hidden: !0 })
-}), Qw = V.Object({
+}), eT = V.Object({
 	id: oy,
 	x: V.Number({ ...H({ hidden: !0 }) }),
 	y: V.Number({ ...H({ hidden: !0 }) }),
 	heightMm: U({
 		title: "Height",
 		minimum: 0,
-		maximum: Jw,
+		maximum: Xw,
 		group: "general",
 		order: 1,
 		description: "Above the roof's eave height."
@@ -11211,14 +11227,14 @@ var zb = V.Object({
 }, {
 	additionalProperties: !1,
 	title: "Roof point",
-	...H({ groups: _w("general").groups })
-}), $w = {
+	...H({ groups: yw("general").groups })
+}), tT = {
 	property: "kind",
 	equals: "step"
-}, eT = V.Object({
+}, nT = V.Object({
 	id: oy,
-	a: Zw,
-	b: Zw,
+	a: $w,
+	b: $w,
 	kind: V.Optional(uy([["break", "Break line"], ["step", "Step line"]], {
 		title: "Kind",
 		default: "break",
@@ -11232,7 +11248,7 @@ var zb = V.Object({
 		default: 500,
 		group: "general",
 		order: 2,
-		visibleWhen: $w,
+		visibleWhen: tT,
 		description: "How much higher the raised side is along the line."
 	})),
 	raisedSide: V.Optional(uy([["left", "Left"], ["right", "Right"]], {
@@ -11240,26 +11256,26 @@ var zb = V.Object({
 		default: "left",
 		group: "general",
 		order: 3,
-		visibleWhen: $w
+		visibleWhen: tT
 	})),
 	stepFace: V.Optional(uy([["side", "Roof sides"], ["wall", "Wall"]], {
 		title: "Step face",
 		default: "side",
 		group: "general",
 		order: 4,
-		visibleWhen: $w
+		visibleWhen: tT
 	}))
 }, {
 	additionalProperties: !1,
 	title: "Break line",
-	...H({ groups: _w("general").groups })
-}), tT = V.Object({
+	...H({ groups: yw("general").groups })
+}), rT = V.Object({
 	x: V.Number(),
 	y: V.Number()
-}, { additionalProperties: !1 }), nT = 4e3, rT = V.Object({
+}, { additionalProperties: !1 }), iT = 4e3, aT = V.Object({
 	id: oy,
 	name: dy(),
-	points: V.Array(tT, {
+	points: V.Array(rT, {
 		minItems: 3,
 		maxItems: 256,
 		...H({ hidden: !0 })
@@ -11267,8 +11283,8 @@ var zb = V.Object({
 }, {
 	additionalProperties: !1,
 	title: "Roof hole",
-	...H({ groups: _w("general").groups })
-}), iT = V.Object({
+	...H({ groups: yw("general").groups })
+}), oT = V.Object({
 	id: oy,
 	name: dy(),
 	templateId: V.String({
@@ -11289,7 +11305,7 @@ var zb = V.Object({
 	widthMm: U({
 		title: "Width",
 		minimum: 300,
-		maximum: nT,
+		maximum: iT,
 		group: "general",
 		order: 1,
 		inlineLabel: "W"
@@ -11297,7 +11313,7 @@ var zb = V.Object({
 	lengthMm: U({
 		title: "Length",
 		minimum: 300,
-		maximum: nT,
+		maximum: iT,
 		group: "general",
 		order: 2,
 		inlineLabel: "L",
@@ -11316,14 +11332,14 @@ var zb = V.Object({
 }, {
 	additionalProperties: !1,
 	title: "Roof window",
-	...H({ groups: _w("general").groups })
-}), aT = {
+	...H({ groups: yw("general").groups })
+}), sT = {
 	property: "design",
 	equals: "open"
-}, oT = {
+}, cT = {
 	property: "design",
 	equals: "closed"
-}, sT = V.Object({
+}, lT = V.Object({
 	id: oy,
 	name: dy(),
 	design: uy([["closed", "Closed"], ["open", "Open"]], {
@@ -11359,7 +11375,7 @@ var zb = V.Object({
 	eaveHeightMm: U({
 		title: "Eave height",
 		minimum: 0,
-		maximum: Yw,
+		maximum: Zw,
 		group: "general",
 		order: 2,
 		description: "The roof's base above the floor; point heights are measured from it."
@@ -11367,7 +11383,7 @@ var zb = V.Object({
 	thicknessMm: U({
 		title: "Thickness",
 		minimum: 10,
-		maximum: Xw,
+		maximum: Qw,
 		group: "general",
 		order: 3,
 		description: "Top to underside (measured vertically)."
@@ -11386,7 +11402,7 @@ var zb = V.Object({
 		title: "Sides",
 		group: "materials",
 		order: 3,
-		visibleWhen: oT
+		visibleWhen: cT
 	}),
 	ribHeightMm: U({
 		title: "Rib height",
@@ -11395,7 +11411,7 @@ var zb = V.Object({
 		group: "ribs",
 		order: 1,
 		inlineLabel: "H",
-		visibleWhen: aT
+		visibleWhen: sT
 	}),
 	ribWidthMm: U({
 		title: "Rib width",
@@ -11404,7 +11420,7 @@ var zb = V.Object({
 		group: "ribs",
 		order: 2,
 		inlineLabel: "W",
-		visibleWhen: aT
+		visibleWhen: sT
 	}),
 	ribSpacingMm: U({
 		title: "Rib spacing",
@@ -11412,38 +11428,38 @@ var zb = V.Object({
 		maximum: 5e3,
 		group: "ribs",
 		order: 3,
-		visibleWhen: aT
+		visibleWhen: sT
 	}),
 	ribMaterial: uy([["wood", "Wood"], ["metal", "Metal"]], {
 		title: "Rib material",
 		default: "wood",
 		group: "ribs",
 		order: 4,
-		visibleWhen: aT
+		visibleWhen: sT
 	}),
-	points: V.Array(Qw, {
+	points: V.Array(eT, {
 		minItems: 3,
 		maxItems: 400,
 		...H({ hidden: !0 })
 	}),
-	outline: V.Array(Zw, {
+	outline: V.Array($w, {
 		minItems: 3,
 		...H({ hidden: !0 })
 	}),
-	lines: V.Array(eT, { ...H({ hidden: !0 }) }),
-	holes: V.Optional(V.Array(rT, {
+	lines: V.Array(nT, { ...H({ hidden: !0 }) }),
+	holes: V.Optional(V.Array(aT, {
 		maxItems: 200,
 		...H({ hidden: !0 })
 	})),
-	windows: V.Optional(V.Array(iT, {
+	windows: V.Optional(V.Array(oT, {
 		maxItems: 200,
 		...H({ hidden: !0 })
 	}))
 }, {
 	additionalProperties: !1,
 	title: "Roof",
-	...H({ groups: _w("general", "materials", "ribs").groups })
-}), cT = 1e3, lT = 1e5, uT = V.Object({
+	...H({ groups: yw("general", "materials", "ribs").groups })
+}), uT = 1e3, dT = 1e5, fT = V.Object({
 	id: oy,
 	name: V.String({
 		title: "Name",
@@ -11463,7 +11479,7 @@ var zb = V.Object({
 	elevationMm: V.Optional(U({
 		title: "Elevation",
 		minimum: -1e5,
-		maximum: lT,
+		maximum: dT,
 		default: 0,
 		group: "placement",
 		order: 2,
@@ -11472,7 +11488,7 @@ var zb = V.Object({
 	slabThicknessMm: V.Optional(U({
 		title: "Slab thickness",
 		minimum: 0,
-		maximum: cT,
+		maximum: uT,
 		default: 200,
 		group: "slab",
 		order: 1,
@@ -11483,15 +11499,15 @@ var zb = V.Object({
 		group: "slab",
 		order: 2
 	})),
-	areas: V.Array(Kw, { ...H({ hidden: !0 }) }),
-	lightGroups: V.Array(zw, { ...H({ hidden: !0 }) }),
-	guides: V.Array(qw, { ...H({ hidden: !0 }) }),
-	roofs: V.Optional(V.Array(sT, { ...H({ hidden: !0 }) }))
+	areas: V.Array(Jw, { ...H({ hidden: !0 }) }),
+	lightGroups: V.Array(Vw, { ...H({ hidden: !0 }) }),
+	guides: V.Array(Yw, { ...H({ hidden: !0 }) }),
+	roofs: V.Optional(V.Array(lT, { ...H({ hidden: !0 }) }))
 }, {
 	additionalProperties: !1,
 	title: "Floor",
-	...H({ groups: _w("general", "placement", "slab").groups })
-}), dT = V.Object({
+	...H({ groups: yw("general", "placement", "slab").groups })
+}), pT = V.Object({
 	id: oy,
 	name: V.String({
 		title: "Name",
@@ -11500,7 +11516,7 @@ var zb = V.Object({
 		...H({ editor: "text" })
 	}),
 	material: hy()
-}, { additionalProperties: !1 }), fT = V.Object({
+}, { additionalProperties: !1 }), mT = V.Object({
 	countryCode: V.Optional(V.String({ pattern: "^[A-Z]{2}$" })),
 	city: V.Optional(V.String()),
 	latitudeDeg: V.Number({
@@ -11520,8 +11536,8 @@ var zb = V.Object({
 		group: "environment",
 		order: 1
 	})
-}), pT = V.Object({
-	location: fT,
+}), hT = V.Object({
+	location: mT,
 	northRotationDeg: sy({
 		title: "North",
 		minimum: 0,
@@ -11557,7 +11573,7 @@ var zb = V.Object({
 	additionalProperties: !1,
 	title: "Environment",
 	...H({ group: "environment" })
-}), mT = V.Object({
+}), gT = V.Object({
 	schemaVersion: V.Literal(6, { ...H({ hidden: !0 }) }),
 	revision: V.Integer({
 		minimum: 0,
@@ -11599,67 +11615,67 @@ var zb = V.Object({
 		group: "appearance",
 		order: 1
 	}),
-	environment: pT,
-	materialPresets: V.Array(dT, { ...H({ hidden: !0 }) }),
-	floors: V.Array(uT, {
+	environment: hT,
+	materialPresets: V.Array(pT, { ...H({ hidden: !0 }) }),
+	floors: V.Array(fT, {
 		minItems: 1,
 		...H({ hidden: !0 })
 	})
 }, {
 	additionalProperties: !1,
 	title: "House",
-	...H({ groups: _w("general", "environment", "appearance").groups })
-}), hT = V.Record(V.String(), V.Unknown()), gT = V.Object({
-	...sT.properties,
+	...H({ groups: yw("general", "environment", "appearance").groups })
+}), _T = V.Record(V.String(), V.Unknown()), vT = V.Object({
+	...lT.properties,
 	cutsWalls: V.Optional(V.Boolean()),
 	wallsRise: V.Optional(V.Boolean())
-}, { additionalProperties: !1 }), _T = V.Object({
-	...uT.properties,
-	roofCuts: V.Array(hT),
-	roofs: V.Optional(V.Array(gT))
-}, { additionalProperties: !1 }), vT = V.Object({
-	...mT.properties,
-	schemaVersion: V.Literal(5),
-	floors: V.Array(_T, { minItems: 1 })
 }, { additionalProperties: !1 }), yT = V.Object({
-	...Kw.properties,
+	...fT.properties,
+	roofCuts: V.Array(_T),
+	roofs: V.Optional(V.Array(vT))
+}, { additionalProperties: !1 }), bT = V.Object({
+	...gT.properties,
+	schemaVersion: V.Literal(5),
+	floors: V.Array(yT, { minItems: 1 })
+}, { additionalProperties: !1 }), xT = V.Object({
+	...Jw.properties,
 	kind: V.Optional(V.Union([V.Literal("room"), V.Literal("staircase")])),
 	staircase: V.Optional(V.Record(V.String(), V.Unknown()))
-}, { additionalProperties: !1 }), bT = V.Object({
-	..._T.properties,
-	areas: V.Array(yT)
-}, { additionalProperties: !1 }), xT = V.Object({
-	...mT.properties,
+}, { additionalProperties: !1 }), ST = V.Object({
+	...yT.properties,
+	areas: V.Array(xT)
+}, { additionalProperties: !1 }), CT = V.Object({
+	...gT.properties,
 	schemaVersion: V.Literal(4),
-	floors: V.Array(bT, { minItems: 1 })
-}, { additionalProperties: !1 }), ST = V.Union([
-	mT,
-	vT,
-	xT
+	floors: V.Array(ST, { minItems: 1 })
+}, { additionalProperties: !1 }), wT = V.Union([
+	gT,
+	bT,
+	CT
 ]);
 V.Object({
 	revision: W,
-	document: mT
+	document: gT
 }, { additionalProperties: !1 }), V.Object({
 	revision: W,
-	document: ST
+	document: wT
 }, { additionalProperties: !1 }), V.Object({
 	expectedRevision: W,
-	document: mT
+	document: gT
 }, { additionalProperties: !1 }), V.Object({ revision: W }, { additionalProperties: !1 }), V.Object({
 	revision: W,
 	preferences: yb
 }, { additionalProperties: !1 });
-var CT = yb.properties.appearance.properties, wT = yb.properties.editor.properties, TT = V.Object({
+var TT = yb.properties.appearance.properties, ET = yb.properties.editor.properties, DT = V.Object({
 	appearance: V.Optional(V.Object({
-		theme: V.Optional(CT.theme),
-		colorScheme: V.Optional(CT.colorScheme),
-		customColors: V.Optional(CT.customColors)
+		theme: V.Optional(TT.theme),
+		colorScheme: V.Optional(TT.colorScheme),
+		customColors: V.Optional(TT.customColors)
 	}, { additionalProperties: !1 })),
 	editor: V.Optional(V.Object({
-		showGroundGrid: V.Optional(wT.showGroundGrid),
-		navigation: V.Optional(wT.navigation),
-		treeShare: V.Optional(wT.treeShare)
+		showGroundGrid: V.Optional(ET.showGroundGrid),
+		navigation: V.Optional(ET.navigation),
+		treeShare: V.Optional(ET.treeShare)
 	}, { additionalProperties: !1 })),
 	homeAssistant: V.Optional(V.Object({
 		viewer: V.Optional(yb.properties.homeAssistant.properties.viewer),
@@ -11669,13 +11685,13 @@ var CT = yb.properties.appearance.properties, wT = yb.properties.editor.properti
 }, { additionalProperties: !1 });
 V.Object({
 	expectedRevision: W,
-	patch: TT
+	patch: DT
 }, { additionalProperties: !1 });
 // shared/domain/house/builtinMaterials.ts
-var ET = "builtinimg_", DT = (e, t, n, r, i, a = 0) => ({
-	id: `${ET}${e}`,
+var OT = "builtinimg_", kT = (e, t, n, r, i, a = 0) => ({
+	id: `${OT}${e}`,
 	name: t,
-	file: `${ET}${e}.png`,
+	file: `${OT}${e}.png`,
 	widthPx: 512,
 	heightPx: 512,
 	tileSizeMm: r,
@@ -11683,20 +11699,20 @@ var ET = "builtinimg_", DT = (e, t, n, r, i, a = 0) => ({
 	presetName: n,
 	presetId: `builtin_${e}`,
 	metallic: a
-}), OT = [
-	DT("oakparquet", "Oak planks", "Oak parquet", 1600, .55),
-	DT("walnut", "Walnut planks", "Walnut", 1600, .5),
-	DT("ashplanks", "Pale ash planks", "Ash", 1600, .6),
-	DT("greytiles", "Grey stone tiles 60 cm", "Grey tiles", 1200, .35),
-	DT("whitetiles", "White tiles 15 cm", "White tiles", 600, .25),
-	DT("terracotta", "Terracotta tiles 30 cm", "Terracotta tiles", 1200, .75),
-	DT("slatetiles", "Slate tiles 60 × 30 cm", "Slate tiles", 1200, .6),
-	DT("granite", "Granite tiles 60 cm", "Granite", 1200, .3),
-	DT("decking", "Wood decking", "Decking", 1160, .8),
-	DT("lawngrass", "Lawn", "Lawn", 2400, .95),
-	DT("paving", "Sandstone paving", "Paving", 1200, .85),
-	DT("aluminium", "Aluminium standing-seam roofing", "Aluminium roofing", 2e3, .4, .35)
-], kT = (e, t = {}) => {
+}), AT = [
+	kT("oakparquet", "Oak planks", "Oak parquet", 1600, .55),
+	kT("walnut", "Walnut planks", "Walnut", 1600, .5),
+	kT("ashplanks", "Pale ash planks", "Ash", 1600, .6),
+	kT("greytiles", "Grey stone tiles 60 cm", "Grey tiles", 1200, .35),
+	kT("whitetiles", "White tiles 15 cm", "White tiles", 600, .25),
+	kT("terracotta", "Terracotta tiles 30 cm", "Terracotta tiles", 1200, .75),
+	kT("slatetiles", "Slate tiles 60 × 30 cm", "Slate tiles", 1200, .6),
+	kT("granite", "Granite tiles 60 cm", "Granite", 1200, .3),
+	kT("decking", "Wood decking", "Decking", 1160, .8),
+	kT("lawngrass", "Lawn", "Lawn", 2400, .95),
+	kT("paving", "Sandstone paving", "Paving", 1200, .85),
+	kT("aluminium", "Aluminium standing-seam roofing", "Aluminium roofing", 2e3, .4, .35)
+], jT = (e, t = {}) => {
 	let n = t.tint ?? [
 		1,
 		1,
@@ -11726,7 +11742,7 @@ var ET = "builtinimg_", DT = (e, t, n, r, i, a = 0) => ({
 			}
 		} }
 	};
-}, AT = (e, t) => ({
+}, MT = (e, t) => ({
 	pbrMetallicRoughness: {
 		baseColorFactor: [
 			e[0],
@@ -11748,11 +11764,11 @@ var ET = "builtinimg_", DT = (e, t, n, r, i, a = 0) => ({
 			y: 0
 		}
 	} }
-}), jT = [
+}), NT = [
 	{
 		id: "builtin_capwhite",
 		name: "Plain white (cap)",
-		material: AT([
+		material: MT([
 			1,
 			1,
 			1
@@ -11761,7 +11777,7 @@ var ET = "builtinimg_", DT = (e, t, n, r, i, a = 0) => ({
 	{
 		id: "builtin_flooring",
 		name: "Default flooring",
-		material: AT([
+		material: MT([
 			.78,
 			.66,
 			.5
@@ -11770,7 +11786,7 @@ var ET = "builtinimg_", DT = (e, t, n, r, i, a = 0) => ({
 	{
 		id: "builtin_wallpaint",
 		name: "Default wall paint",
-		material: AT([
+		material: MT([
 			.94,
 			.93,
 			.9
@@ -11779,7 +11795,7 @@ var ET = "builtinimg_", DT = (e, t, n, r, i, a = 0) => ({
 	{
 		id: "builtin_concrete",
 		name: "Concrete",
-		material: AT([
+		material: MT([
 			.62,
 			.62,
 			.6
@@ -11788,114 +11804,114 @@ var ET = "builtinimg_", DT = (e, t, n, r, i, a = 0) => ({
 	{
 		id: "builtin_darkwood",
 		name: "Dark wood",
-		material: AT([
+		material: MT([
 			.35,
 			.22,
 			.13
 		], .6)
 	},
-	...OT.map((e) => ({
+	...AT.map((e) => ({
 		id: e.presetId,
 		name: e.presetName,
-		material: kT(e)
+		material: jT(e)
 	}))
 ];
 ((e) => {
-	let t = jT.find((t) => t.id === e);
+	let t = NT.find((t) => t.id === e);
 	if (t === void 0) throw Error(`Unknown built-in preset ${e}`);
 	return structuredClone(t.material);
 })("builtin_concrete");
 // node_modules/immer/dist/immer.mjs
-var MT = Symbol.for("immer-nothing"), NT = Symbol.for("immer-draftable"), PT = Symbol.for("immer-state");
-function FT(e, ...t) {
+var PT = Symbol.for("immer-nothing"), FT = Symbol.for("immer-draftable"), IT = Symbol.for("immer-state");
+function LT(e, ...t) {
 	throw Error(`[Immer] minified error nr: ${e}. Full error at: https://bit.ly/3cXEKWf`);
 }
-var IT = Object, LT = IT.getPrototypeOf, RT = "constructor", zT = "prototype", BT = "configurable", VT = "enumerable", HT = "writable", UT = "value", WT = (e) => !!e && !!e[PT];
-function GT(e) {
-	return e ? JT(e) || tE(e) || !!e[NT] || !!e[RT]?.[NT] || nE(e) || rE(e) : !1;
+var RT = Object, zT = RT.getPrototypeOf, BT = "constructor", VT = "prototype", HT = "configurable", UT = "enumerable", WT = "writable", GT = "value", KT = (e) => !!e && !!e[IT];
+function qT(e) {
+	return e ? XT(e) || rE(e) || !!e[FT] || !!e[BT]?.[FT] || iE(e) || aE(e) : !1;
 }
-var KT = IT[zT][RT].toString(), qT = /* @__PURE__ */ new WeakMap();
-function JT(e) {
-	if (!e || !iE(e)) return !1;
-	let t = LT(e);
-	if (t === null || t === IT[zT]) return !0;
-	let n = IT.hasOwnProperty.call(t, RT) && t[RT];
+var JT = RT[VT][BT].toString(), YT = /* @__PURE__ */ new WeakMap();
+function XT(e) {
+	if (!e || !oE(e)) return !1;
+	let t = zT(e);
+	if (t === null || t === RT[VT]) return !0;
+	let n = RT.hasOwnProperty.call(t, BT) && t[BT];
 	if (n === Object) return !0;
-	if (!aE(n)) return !1;
-	let r = qT.get(n);
-	return r === void 0 && (r = Function.toString.call(n), qT.set(n, r)), r === KT;
+	if (!sE(n)) return !1;
+	let r = YT.get(n);
+	return r === void 0 && (r = Function.toString.call(n), YT.set(n, r)), r === JT;
 }
-function YT(e, t, n = !0) {
-	XT(e) === 0 ? (n ? Reflect.ownKeys(e) : IT.keys(e)).forEach((n) => {
+function ZT(e, t, n = !0) {
+	QT(e) === 0 ? (n ? Reflect.ownKeys(e) : RT.keys(e)).forEach((n) => {
 		t(n, e[n], e);
 	}) : e.forEach((n, r) => t(r, n, e));
 }
-function XT(e) {
-	let t = e[PT];
-	return t ? t.type_ : tE(e) ? 1 : nE(e) ? 2 : rE(e) ? 3 : 0;
+function QT(e) {
+	let t = e[IT];
+	return t ? t.type_ : rE(e) ? 1 : iE(e) ? 2 : aE(e) ? 3 : 0;
 }
-var ZT = (e, t, n = XT(e)) => n === 2 ? e.has(t) : IT[zT].hasOwnProperty.call(e, t), QT = (e, t, n = XT(e)) => n === 2 ? e.get(t) : e[t], $T = (e, t, n, r = XT(e)) => {
+var $T = (e, t, n = QT(e)) => n === 2 ? e.has(t) : RT[VT].hasOwnProperty.call(e, t), eE = (e, t, n = QT(e)) => n === 2 ? e.get(t) : e[t], tE = (e, t, n, r = QT(e)) => {
 	r === 2 ? e.set(t, n) : r === 3 ? e.add(n) : e[t] = n;
 };
-function eE(e, t) {
+function nE(e, t) {
 	return e === t ? e !== 0 || 1 / e == 1 / t : e !== e && t !== t;
 }
-var tE = Array.isArray, nE = (e) => e instanceof Map, rE = (e) => e instanceof Set, iE = (e) => typeof e == "object", aE = (e) => typeof e == "function", oE = (e) => typeof e == "boolean";
-function sE(e) {
+var rE = Array.isArray, iE = (e) => e instanceof Map, aE = (e) => e instanceof Set, oE = (e) => typeof e == "object", sE = (e) => typeof e == "function", cE = (e) => typeof e == "boolean";
+function lE(e) {
 	let t = +e;
 	return Number.isInteger(t) && String(t) === e;
 }
-var cE = (e) => e.copy_ || e.base_, lE = (e) => e.modified_ ? e.copy_ : e.base_;
-function uE(e, t) {
-	if (nE(e)) return new Map(e);
-	if (rE(e)) return new Set(e);
-	if (tE(e)) return Array[zT].slice.call(e);
-	let n = JT(e);
+var uE = (e) => e.copy_ || e.base_, dE = (e) => e.modified_ ? e.copy_ : e.base_;
+function fE(e, t) {
+	if (iE(e)) return new Map(e);
+	if (aE(e)) return new Set(e);
+	if (rE(e)) return Array[VT].slice.call(e);
+	let n = XT(e);
 	if (t === !0 || t === "class_only" && !n) {
-		let t = IT.getOwnPropertyDescriptors(e);
-		delete t[PT];
+		let t = RT.getOwnPropertyDescriptors(e);
+		delete t[IT];
 		let n = Reflect.ownKeys(t);
 		for (let r = 0; r < n.length; r++) {
 			let i = n[r], a = t[i];
-			a[HT] === !1 && (a[HT] = !0, a[BT] = !0), (a.get || a.set) && (t[i] = {
-				[BT]: !0,
+			a[WT] === !1 && (a[WT] = !0, a[HT] = !0), (a.get || a.set) && (t[i] = {
 				[HT]: !0,
-				[VT]: a[VT],
-				[UT]: e[i]
+				[WT]: !0,
+				[UT]: a[UT],
+				[GT]: e[i]
 			});
 		}
-		return IT.create(LT(e), t);
+		return RT.create(zT(e), t);
 	}
 	{
-		let t = LT(e);
+		let t = zT(e);
 		if (t !== null && n) return { ...e };
-		let r = IT.create(t);
-		return IT.assign(r, e);
+		let r = RT.create(t);
+		return RT.assign(r, e);
 	}
 }
-function dE(e, t = !1) {
-	return mE(e) || WT(e) || !GT(e) || (XT(e) > 1 && IT.defineProperties(e, {
-		set: pE,
-		add: pE,
-		clear: pE,
-		delete: pE
-	}), IT.freeze(e), t && YT(e, (e, t) => {
-		dE(t, !0);
+function pE(e, t = !1) {
+	return gE(e) || KT(e) || !qT(e) || (QT(e) > 1 && RT.defineProperties(e, {
+		set: hE,
+		add: hE,
+		clear: hE,
+		delete: hE
+	}), RT.freeze(e), t && ZT(e, (e, t) => {
+		pE(t, !0);
 	}, !1)), e;
 }
-function fE() {
-	FT(2);
+function mE() {
+	LT(2);
 }
-var pE = { [UT]: fE };
-function mE(e) {
-	return e === null || !iE(e) || IT.isFrozen(e);
+var hE = { [GT]: mE };
+function gE(e) {
+	return e === null || !oE(e) || RT.isFrozen(e);
 }
-var hE = "MapSet", gE = "Patches", _E = "ArrayMethods", vE = {};
-function yE(e) {
-	let t = vE[e];
-	return t || FT(0, e), t;
+var _E = "MapSet", vE = "Patches", yE = "ArrayMethods", bE = {};
+function xE(e) {
+	let t = bE[e];
+	return t || LT(0, e), t;
 }
-var bE = (e) => !!vE[e], xE, SE = () => xE, CE = (e, t) => ({
+var SE = (e) => !!bE[e], CE, wE = () => CE, TE = (e, t) => ({
 	drafts_: [],
 	parent_: e,
 	immer_: t,
@@ -11903,114 +11919,114 @@ var bE = (e) => !!vE[e], xE, SE = () => xE, CE = (e, t) => ({
 	unfinalizedDrafts_: 0,
 	handledSet_: /* @__PURE__ */ new Set(),
 	processedForPatches_: /* @__PURE__ */ new Set(),
-	mapSetPlugin_: bE(hE) ? yE(hE) : void 0,
-	arrayMethodsPlugin_: bE(_E) ? yE(_E) : void 0
+	mapSetPlugin_: SE(_E) ? xE(_E) : void 0,
+	arrayMethodsPlugin_: SE(yE) ? xE(yE) : void 0
 });
-function wE(e, t) {
-	t && (e.patchPlugin_ = yE(gE), e.patches_ = [], e.inversePatches_ = [], e.patchListener_ = t);
+function EE(e, t) {
+	t && (e.patchPlugin_ = xE(vE), e.patches_ = [], e.inversePatches_ = [], e.patchListener_ = t);
 }
-function TE(e) {
-	EE(e), e.drafts_.forEach(OE), e.drafts_ = null;
+function DE(e) {
+	OE(e), e.drafts_.forEach(AE), e.drafts_ = null;
 }
-function EE(e) {
-	e === xE && (xE = e.parent_);
-}
-var DE = (e) => xE = CE(xE, e);
 function OE(e) {
-	let t = e[PT];
+	e === CE && (CE = e.parent_);
+}
+var kE = (e) => CE = TE(CE, e);
+function AE(e) {
+	let t = e[IT];
 	t.type_ === 0 || t.type_ === 1 ? t.revoke_() : t.revoked_ = !0;
 }
-function kE(e, t) {
+function jE(e, t) {
 	t.unfinalizedDrafts_ = t.drafts_.length;
 	let n = t.drafts_[0];
 	if (e !== void 0 && e !== n) {
-		n[PT].modified_ && (TE(t), FT(4)), GT(e) && (e = AE(t, e));
+		n[IT].modified_ && (DE(t), LT(4)), qT(e) && (e = ME(t, e));
 		let { patchPlugin_: r } = t;
-		r && r.generateReplacementPatches_(n[PT].base_, e, t);
-	} else e = AE(t, n);
-	return jE(t, e, !0), TE(t), t.patches_ && t.patchListener_(t.patches_, t.inversePatches_), e === MT ? void 0 : e;
+		r && r.generateReplacementPatches_(n[IT].base_, e, t);
+	} else e = ME(t, n);
+	return NE(t, e, !0), DE(t), t.patches_ && t.patchListener_(t.patches_, t.inversePatches_), e === PT ? void 0 : e;
 }
-function AE(e, t) {
-	if (mE(t)) return t;
-	let n = t[PT];
-	if (!n) return zE(t, e.handledSet_, e);
-	if (!NE(n, e)) return t;
+function ME(e, t) {
+	if (gE(t)) return t;
+	let n = t[IT];
+	if (!n) return VE(t, e.handledSet_, e);
+	if (!FE(n, e)) return t;
 	if (!n.modified_) return n.base_;
 	if (!n.finalized_) {
 		let { callbacks_: t } = n;
 		if (t) for (; t.length > 0;) t.pop()(e);
-		LE(n, e);
+		zE(n, e);
 	}
 	return n.copy_;
 }
-function jE(e, t, n = !1) {
-	!e.parent_ && e.immer_.autoFreeze_ && e.canAutoFreeze_ && dE(t, n);
+function NE(e, t, n = !1) {
+	!e.parent_ && e.immer_.autoFreeze_ && e.canAutoFreeze_ && pE(t, n);
 }
-function ME(e) {
+function PE(e) {
 	e.finalized_ = !0, e.scope_.unfinalizedDrafts_--;
 }
-var NE = (e, t) => e.scope_ === t, PE = [];
-function FE(e, t, n, r) {
-	let i = cE(e), a = e.type_;
-	if (r !== void 0 && QT(i, r, a) === t) {
-		$T(i, r, n, a);
+var FE = (e, t) => e.scope_ === t, IE = [];
+function LE(e, t, n, r) {
+	let i = uE(e), a = e.type_;
+	if (r !== void 0 && eE(i, r, a) === t) {
+		tE(i, r, n, a);
 		return;
 	}
 	if (!e.draftLocations_) {
 		let t = e.draftLocations_ = /* @__PURE__ */ new Map();
-		YT(i, (e, n) => {
-			if (WT(n)) {
+		ZT(i, (e, n) => {
+			if (KT(n)) {
 				let r = t.get(n) || [];
 				r.push(e), t.set(n, r);
 			}
 		});
 	}
-	let o = e.draftLocations_.get(t) ?? PE;
-	for (let e of o) $T(i, e, n, a);
+	let o = e.draftLocations_.get(t) ?? IE;
+	for (let e of o) tE(i, e, n, a);
 }
-function IE(e, t, n) {
+function RE(e, t, n) {
 	e.callbacks_.push(function(r) {
 		let i = t;
-		if (!i || !NE(i, r)) return;
+		if (!i || !FE(i, r)) return;
 		r.mapSetPlugin_?.fixSetContents(i);
-		let a = lE(i);
-		FE(e, i.draft_ ?? i, a, n), LE(i, r);
+		let a = dE(i);
+		LE(e, i.draft_ ?? i, a, n), zE(i, r);
 	});
 }
-function LE(e, t) {
+function zE(e, t) {
 	if (e.modified_ && !e.finalized_ && (e.type_ === 3 || e.type_ === 1 && e.allIndicesReassigned_ || (e.assigned_?.size ?? 0) > 0)) {
 		let { patchPlugin_: n } = t;
 		if (n) {
 			let r = n.getPath(e);
 			r && n.generatePatches_(e, r, t);
 		}
-		ME(e);
+		PE(e);
 	}
 }
-function RE(e, t, n) {
+function BE(e, t, n) {
 	let { scope_: r } = e;
-	if (WT(n)) {
-		let i = n[PT];
-		NE(i, r) && i.callbacks_.push(function() {
-			JE(e), FE(e, n, lE(i), t);
+	if (KT(n)) {
+		let i = n[IT];
+		FE(i, r) && i.callbacks_.push(function() {
+			XE(e), LE(e, n, dE(i), t);
 		});
-	} else GT(n) && e.callbacks_.push(function() {
-		let i = cE(e);
-		e.type_ === 3 ? i.has(n) && zE(n, r.handledSet_, r) : QT(i, t, e.type_) === n && r.drafts_.length > 1 && (e.assigned_.get(t) ?? !1) === !0 && e.copy_ && zE(QT(e.copy_, t, e.type_), r.handledSet_, r);
+	} else qT(n) && e.callbacks_.push(function() {
+		let i = uE(e);
+		e.type_ === 3 ? i.has(n) && VE(n, r.handledSet_, r) : eE(i, t, e.type_) === n && r.drafts_.length > 1 && (e.assigned_.get(t) ?? !1) === !0 && e.copy_ && VE(eE(e.copy_, t, e.type_), r.handledSet_, r);
 	});
 }
-function zE(e, t, n) {
-	return !n.immer_.autoFreeze_ && n.unfinalizedDrafts_ < 1 || WT(e) || t.has(e) || !GT(e) || mE(e) || (t.add(e), YT(e, (r, i) => {
-		if (WT(i)) {
-			let t = i[PT];
-			NE(t, n) && ($T(e, r, lE(t), e.type_), ME(t));
-		} else GT(i) && zE(i, t, n);
+function VE(e, t, n) {
+	return !n.immer_.autoFreeze_ && n.unfinalizedDrafts_ < 1 || KT(e) || t.has(e) || !qT(e) || gE(e) || (t.add(e), ZT(e, (r, i) => {
+		if (KT(i)) {
+			let t = i[IT];
+			FE(t, n) && (tE(e, r, dE(t), e.type_), PE(t));
+		} else qT(i) && VE(i, t, n);
 	})), e;
 }
-function BE(e, t) {
-	let n = tE(e), r = {
+function HE(e, t) {
+	let n = rE(e), r = {
 		type_: +!!n,
-		scope_: t ? t.scope_ : SE(),
+		scope_: t ? t.scope_ : wE(),
 		modified_: !1,
 		finalized_: !1,
 		assigned_: void 0,
@@ -12021,108 +12037,108 @@ function BE(e, t) {
 		revoke_: null,
 		isManual_: !1,
 		callbacks_: void 0
-	}, i = r, a = VE;
-	n && (i = [r], a = HE);
+	}, i = r, a = UE;
+	n && (i = [r], a = WE);
 	let { revoke: o, proxy: s } = Proxy.revocable(i, a);
 	return r.draft_ = s, r.revoke_ = o, [s, r];
 }
-var VE = {
+var UE = {
 	get(e, t) {
-		if (t === PT) return e;
+		if (t === IT) return e;
 		let n = e.scope_.arrayMethodsPlugin_, r = e.type_ === 1 && typeof t == "string";
 		if (r && n?.isArrayOperationMethod(t)) return n.createMethodInterceptor(e, t);
-		let i = cE(e);
-		if (!ZT(i, t, e.type_)) return GE(e, i, t);
+		let i = uE(e);
+		if (!$T(i, t, e.type_)) return qE(e, i, t);
 		let a = i[t];
-		if (e.finalized_ || !GT(a) || r && e.operationMethod && n?.isMutatingArrayMethod(e.operationMethod) && sE(t)) return a;
-		if (a === UE(e.base_, t) || WE(e, t, a)) {
-			JE(e);
-			let n = e.type_ === 1 ? +t : t, r = XE(e.scope_, a, e, n);
+		if (e.finalized_ || !qT(a) || r && e.operationMethod && n?.isMutatingArrayMethod(e.operationMethod) && lE(t)) return a;
+		if (a === GE(e.base_, t) || KE(e, t, a)) {
+			XE(e);
+			let n = e.type_ === 1 ? +t : t, r = QE(e.scope_, a, e, n);
 			return e.copy_[n] = r;
 		}
 		return a;
 	},
 	has(e, t) {
-		return t in cE(e);
+		return t in uE(e);
 	},
 	ownKeys(e) {
-		return Reflect.ownKeys(cE(e));
+		return Reflect.ownKeys(uE(e));
 	},
 	set(e, t, n) {
-		let r = KE(cE(e), t);
+		let r = JE(uE(e), t);
 		if (r?.set) return r.set.call(e.draft_, n), !0;
 		if (!e.modified_) {
-			let r = UE(cE(e), t), i = r?.[PT];
+			let r = GE(uE(e), t), i = r?.[IT];
 			if (i && i.base_ === n) return e.copy_[t] = n, e.assigned_.delete(t), !0;
-			if (eE(n, r) && (n !== void 0 || ZT(e.base_, t, e.type_))) return !0;
-			JE(e), qE(e);
+			if (nE(n, r) && (n !== void 0 || $T(e.base_, t, e.type_))) return !0;
+			XE(e), YE(e);
 		}
-		return e.copy_[t] === n && (n !== void 0 || ZT(e.copy_, t, e.type_)) || Number.isNaN(n) && Number.isNaN(e.copy_[t]) || (e.copy_[t] = n, e.assigned_.set(t, !0), RE(e, t, n)), !0;
+		return e.copy_[t] === n && (n !== void 0 || $T(e.copy_, t, e.type_)) || Number.isNaN(n) && Number.isNaN(e.copy_[t]) || (e.copy_[t] = n, e.assigned_.set(t, !0), BE(e, t, n)), !0;
 	},
 	deleteProperty(e, t) {
-		return JE(e), UE(e.base_, t) !== void 0 || t in e.base_ ? (e.assigned_.set(t, !1), qE(e)) : e.assigned_.delete(t), e.copy_ && delete e.copy_[t], !0;
+		return XE(e), GE(e.base_, t) !== void 0 || t in e.base_ ? (e.assigned_.set(t, !1), YE(e)) : e.assigned_.delete(t), e.copy_ && delete e.copy_[t], !0;
 	},
 	getOwnPropertyDescriptor(e, t) {
-		let n = cE(e), r = Reflect.getOwnPropertyDescriptor(n, t);
+		let n = uE(e), r = Reflect.getOwnPropertyDescriptor(n, t);
 		return r && {
-			[HT]: !0,
-			[BT]: e.type_ !== 1 || t !== "length",
-			[VT]: r[VT],
-			[UT]: n[t]
+			[WT]: !0,
+			[HT]: e.type_ !== 1 || t !== "length",
+			[UT]: r[UT],
+			[GT]: n[t]
 		};
 	},
 	defineProperty() {
-		FT(11);
+		LT(11);
 	},
 	getPrototypeOf(e) {
-		return LT(e.base_);
+		return zT(e.base_);
 	},
 	setPrototypeOf() {
-		FT(12);
+		LT(12);
 	}
-}, HE = {};
-for (let e in VE) {
-	let t = VE[e];
-	HE[e] = function() {
+}, WE = {};
+for (let e in UE) {
+	let t = UE[e];
+	WE[e] = function() {
 		let e = arguments;
 		return e[0] = e[0][0], t.apply(this, e);
 	};
 }
-HE.deleteProperty = function(e, t) {
-	return HE.set.call(this, e, t, void 0);
-}, HE.set = function(e, t, n) {
-	return VE.set.call(this, e[0], t, n, e[0]);
+WE.deleteProperty = function(e, t) {
+	return WE.set.call(this, e, t, void 0);
+}, WE.set = function(e, t, n) {
+	return UE.set.call(this, e[0], t, n, e[0]);
 };
-function UE(e, t) {
-	let n = e[PT];
-	return (n ? cE(n) : e)[t];
+function GE(e, t) {
+	let n = e[IT];
+	return (n ? uE(n) : e)[t];
 }
-function WE(e, t, n) {
-	return e.type_ !== 1 || !e.allIndicesReassigned_ || !GT(n) || n[PT] ? !1 : e.baseRefs_.has(n);
+function KE(e, t, n) {
+	return e.type_ !== 1 || !e.allIndicesReassigned_ || !qT(n) || n[IT] ? !1 : e.baseRefs_.has(n);
 }
-function GE(e, t, n) {
-	let r = KE(t, n);
-	return r ? UT in r ? r[UT] : r.get?.call(e.draft_) : void 0;
+function qE(e, t, n) {
+	let r = JE(t, n);
+	return r ? GT in r ? r[GT] : r.get?.call(e.draft_) : void 0;
 }
-function KE(e, t) {
+function JE(e, t) {
 	if (!(t in e)) return;
-	let n = LT(e);
+	let n = zT(e);
 	for (; n;) {
 		let e = Object.getOwnPropertyDescriptor(n, t);
 		if (e) return e;
-		n = LT(n);
+		n = zT(n);
 	}
 }
-function qE(e) {
-	e.modified_ || (e.modified_ = !0, e.parent_ && qE(e.parent_));
+function YE(e) {
+	e.modified_ || (e.modified_ = !0, e.parent_ && YE(e.parent_));
 }
-function JE(e) {
-	e.copy_ ||= (e.assigned_ = /* @__PURE__ */ new Map(), uE(e.base_, e.scope_.immer_.useStrictShallowCopy_));
+function XE(e) {
+	e.copy_ ||= (e.assigned_ = /* @__PURE__ */ new Map(), fE(e.base_, e.scope_.immer_.useStrictShallowCopy_));
 }
-var YE = class {
+var ZE = class {
 	constructor(e) {
 		this.autoFreeze_ = !0, this.useStrictShallowCopy_ = !1, this.useStrictIteration_ = !1, this.produce = (e, t, n) => {
-			if (aE(e) && !aE(t)) {
+			if (sE(e) && !sE(t)) {
 				let n = t;
 				t = e;
 				let r = this;
@@ -12130,30 +12146,30 @@ var YE = class {
 					return r.produce(e, (e) => t.call(this, e, ...i));
 				};
 			}
-			aE(t) || FT(6), n !== void 0 && !aE(n) && FT(7);
+			sE(t) || LT(6), n !== void 0 && !sE(n) && LT(7);
 			let r;
-			if (GT(e)) {
-				let i = DE(this), a = XE(i, e, void 0), o = !0;
+			if (qT(e)) {
+				let i = kE(this), a = QE(i, e, void 0), o = !0;
 				try {
 					r = t(a), o = !1;
 				} finally {
-					o ? TE(i) : EE(i);
+					o ? DE(i) : OE(i);
 				}
-				return wE(i, n), kE(r, i);
+				return EE(i, n), jE(r, i);
 			}
-			if (!e || !iE(e)) {
-				if (r = t(e), r === void 0 && (r = e), r === MT && (r = void 0), this.autoFreeze_ && dE(r, !0), n) {
+			if (!e || !oE(e)) {
+				if (r = t(e), r === void 0 && (r = e), r === PT && (r = void 0), this.autoFreeze_ && pE(r, !0), n) {
 					let t = [], i = [];
-					yE(gE).generateReplacementPatches_(e, r, {
+					xE(vE).generateReplacementPatches_(e, r, {
 						patches_: t,
 						inversePatches_: i
 					}), n(t, i);
 				}
 				return r;
 			}
-			FT(1, e);
+			LT(1, e);
 		}, this.produceWithPatches = (e, t) => {
-			if (aE(e)) return (t, ...n) => this.produceWithPatches(t, (t) => e(t, ...n));
+			if (sE(e)) return (t, ...n) => this.produceWithPatches(t, (t) => e(t, ...n));
 			let n, r;
 			return [
 				this.produce(e, t, (e, t) => {
@@ -12162,20 +12178,20 @@ var YE = class {
 				n,
 				r
 			];
-		}, oE(e?.autoFreeze) && this.setAutoFreeze(e.autoFreeze);
+		}, cE(e?.autoFreeze) && this.setAutoFreeze(e.autoFreeze);
 		let t = e?.useStrictShallowCopy;
-		(oE(t) || t === "class_only") && this.setUseStrictShallowCopy(t), oE(e?.useStrictIteration) && this.setUseStrictIteration(e.useStrictIteration);
+		(cE(t) || t === "class_only") && this.setUseStrictShallowCopy(t), cE(e?.useStrictIteration) && this.setUseStrictIteration(e.useStrictIteration);
 	}
 	createDraft(e) {
-		GT(e) || FT(8), WT(e) && (e = ZE(e));
-		let t = DE(this), n = XE(t, e, void 0);
-		return n[PT].isManual_ = !0, EE(t), n;
+		qT(e) || LT(8), KT(e) && (e = $E(e));
+		let t = kE(this), n = QE(t, e, void 0);
+		return n[IT].isManual_ = !0, OE(t), n;
 	}
 	finishDraft(e, t) {
-		let n = e && e[PT];
-		n && n.isManual_ || FT(9);
+		let n = e && e[IT];
+		n && n.isManual_ || LT(9);
 		let { scope_: r } = n;
-		return wE(r, t), kE(void 0, r);
+		return EE(r, t), jE(void 0, r);
 	}
 	setAutoFreeze(e) {
 		this.autoFreeze_ = e;
@@ -12199,51 +12215,51 @@ var YE = class {
 			}
 		}
 		n > -1 && (t = t.slice(n + 1));
-		let r = yE(gE).applyPatches_;
-		return WT(e) ? r(e, t) : this.produce(e, (e) => r(e, t));
+		let r = xE(vE).applyPatches_;
+		return KT(e) ? r(e, t) : this.produce(e, (e) => r(e, t));
 	}
 };
-function XE(e, t, n, r) {
-	let [i, a] = nE(t) ? yE(hE).proxyMap_(t, n) : rE(t) ? yE(hE).proxySet_(t, n) : BE(t, n);
-	return (n?.scope_ ?? SE()).drafts_.push(i), a.callbacks_ = n?.callbacks_ ?? [], a.key_ = r, n && r !== void 0 ? IE(n, a, r) : a.callbacks_.push(function(e) {
+function QE(e, t, n, r) {
+	let [i, a] = iE(t) ? xE(_E).proxyMap_(t, n) : aE(t) ? xE(_E).proxySet_(t, n) : HE(t, n);
+	return (n?.scope_ ?? wE()).drafts_.push(i), a.callbacks_ = n?.callbacks_ ?? [], a.key_ = r, n && r !== void 0 ? RE(n, a, r) : a.callbacks_.push(function(e) {
 		e.mapSetPlugin_?.fixSetContents(a);
 		let { patchPlugin_: t } = e;
 		a.modified_ && t && t.generatePatches_(a, [], e);
 	}), i;
 }
-function ZE(e) {
-	return WT(e) || FT(10, e), QE(e);
+function $E(e) {
+	return KT(e) || LT(10, e), eD(e);
 }
-function QE(e) {
-	if (!GT(e) || mE(e)) return e;
-	let t = e[PT], n, r = !0;
+function eD(e) {
+	if (!qT(e) || gE(e)) return e;
+	let t = e[IT], n, r = !0;
 	if (t) {
 		if (!t.modified_) return t.base_;
-		t.finalized_ = !0, n = uE(e, t.scope_.immer_.useStrictShallowCopy_), r = t.scope_.immer_.shouldUseStrictIteration();
-	} else n = uE(e, !0);
+		t.finalized_ = !0, n = fE(e, t.scope_.immer_.useStrictShallowCopy_), r = t.scope_.immer_.shouldUseStrictIteration();
+	} else n = fE(e, !0);
 	let i = n;
-	return rE(n) && (n = /* @__PURE__ */ new Set()), YT(i, (e, t) => {
-		$T(n, e, QE(t));
+	return aE(n) && (n = /* @__PURE__ */ new Set()), ZT(i, (e, t) => {
+		tE(n, e, eD(t));
 	}, r), t && (t.finalized_ = !1), n;
 }
-globalThis.Iterator?.from, new YE().produce;
+globalThis.Iterator?.from, new ZE().produce;
 // shared/geometry/draftSafeWeakMap.ts
-var $E = class {
+var tD = class {
 	map = /* @__PURE__ */ new WeakMap();
 	get(e) {
-		return WT(e) ? void 0 : this.map.get(e);
+		return KT(e) ? void 0 : this.map.get(e);
 	}
 	set(e, t) {
-		return WT(e) || this.map.set(e, t), this;
+		return KT(e) || this.map.set(e, t), this;
 	}
-}, eD;
+}, nD;
 (function(e) {
 	e[e.NoClip = 0] = "NoClip", e[e.Intersection = 1] = "Intersection", e[e.Union = 2] = "Union", e[e.Difference = 3] = "Difference", e[e.Xor = 4] = "Xor";
-})(eD ||= {});
-var tD;
+})(nD ||= {});
+var rD;
 (function(e) {
 	e[e.Subject = 0] = "Subject", e[e.Clip = 1] = "Clip";
-})(tD ||= {});
+})(rD ||= {});
 var J;
 (function(e) {
 	e[e.EvenOdd = 0] = "EvenOdd", e[e.NonZero = 1] = "NonZero", e[e.Positive = 2] = "Positive", e[e.Negative = 3] = "Negative";
@@ -12539,7 +12555,7 @@ var Z;
 	}
 	e.toString = s;
 })(Z ||= {});
-var nD;
+var iD;
 (function(e) {
 	function t(e = 0, t = 0, n = 0) {
 		return {
@@ -12577,8 +12593,8 @@ var nD;
 		return e.z !== void 0 && e.z !== 0 ? `${e.x.toFixed(t)},${e.y.toFixed(t)},${e.z}` : `${e.x.toFixed(t)},${e.y.toFixed(t)}`;
 	}
 	e.toString = o;
-})(nD ||= {});
-var rD;
+})(iD ||= {});
+var aD;
 (function(e) {
 	function t(e = 0, t = 0, n = 0, r = 0) {
 		return {
@@ -12658,8 +12674,8 @@ var rD;
 		];
 	}
 	e.asPath = d;
-})(rD ||= {});
-var iD;
+})(aD ||= {});
+var oD;
 (function(e) {
 	function t(e = 0, t = 0, n = 0, r = 0) {
 		return {
@@ -12735,8 +12751,8 @@ var iD;
 		];
 	}
 	e.asPath = u;
-})(iD ||= {});
-var aD;
+})(oD ||= {});
+var sD;
 (function(e) {
 	function t(e) {
 		let t = "";
@@ -12746,7 +12762,7 @@ var aD;
 	e.toString64 = t;
 	function n(e, t = 2) {
 		let n = "";
-		for (let r of e) n += nD.toString(r, t) + ", ";
+		for (let r of e) n += iD.toString(r, t) + ", ";
 		return n !== "" && (n = n.slice(0, -2)), n;
 	}
 	e.toStringD = n;
@@ -12758,35 +12774,35 @@ var aD;
 		return [...e].reverse();
 	}
 	e.reverseD = i;
-})(aD ||= {});
-var oD;
+})(sD ||= {});
+var cD;
 (function(e) {
 	function t(e) {
 		let t = "";
-		for (let n of e) t += aD.toString64(n);
+		for (let n of e) t += sD.toString64(n);
 		return t;
 	}
 	e.toString64 = t;
 	function n(e, t = 2) {
 		let n = "";
-		for (let r of e) n += aD.toStringD(r, t) + "\n";
+		for (let r of e) n += sD.toStringD(r, t) + "\n";
 		return n;
 	}
 	e.toStringD = n;
 	function r(e) {
-		return e.map((e) => aD.reverse64(e));
+		return e.map((e) => sD.reverse64(e));
 	}
 	e.reverse64 = r;
 	function i(e) {
-		return e.map((e) => aD.reverseD(e));
+		return e.map((e) => sD.reverseD(e));
 	}
 	e.reverseD = i;
-})(oD ||= {});
-var sD = rD.createInvalid(), cD = iD.createInvalid(), Q;
+})(cD ||= {});
+var lD = aD.createInvalid(), uD = oD.createInvalid(), Q;
 (function(e) {
 	e[e.None = 0] = "None", e[e.OpenStart = 1] = "OpenStart", e[e.OpenEnd = 2] = "OpenEnd", e[e.LocalMax = 4] = "LocalMax", e[e.LocalMin = 8] = "LocalMin";
 })(Q ||= {});
-var lD = class {
+var dD = class {
 	data = [];
 	push(e) {
 		this.data.push(e), this.siftUp(this.data.length - 1);
@@ -12814,7 +12830,7 @@ var lD = class {
 			[this.data[e], this.data[n]] = [this.data[n], this.data[e]], e = n;
 		}
 	}
-}, uD = class {
+}, fD = class {
 	pt;
 	next = null;
 	prev = null;
@@ -12822,7 +12838,7 @@ var lD = class {
 	constructor(e, t, n) {
 		this.pt = e, this.flags = t, this.prev = n;
 	}
-}, dD = class {
+}, pD = class {
 	vertex;
 	polytype;
 	isOpen;
@@ -12833,7 +12849,7 @@ var lD = class {
 		return e !== null && this.vertex === e.vertex;
 	}
 };
-function fD(e, t, n) {
+function mD(e, t, n) {
 	return {
 		pt: {
 			x: e.x,
@@ -12844,7 +12860,7 @@ function fD(e, t, n) {
 		edge2: n
 	};
 }
-var pD = class e {
+var hD = class e {
 	static _nextId = 1;
 	_debugId;
 	pt;
@@ -12855,15 +12871,15 @@ var pD = class e {
 	constructor(t, n) {
 		this._debugId = e._nextId++, this.pt = t, this.outrec = n, this.next = this, this.prev = this, this.horz = null;
 	}
-}, mD;
+}, gD;
 (function(e) {
 	e[e.None = 0] = "None", e[e.Left = 1] = "Left", e[e.Right = 2] = "Right";
-})(mD ||= {});
-var hD;
+})(gD ||= {});
+var _D;
 (function(e) {
 	e[e.Bottom = 0] = "Bottom", e[e.Middle = 1] = "Middle", e[e.Top = 2] = "Top";
-})(hD ||= {});
-var gD = class e {
+})(_D ||= {});
+var vD = class e {
 	static _nextId = 1;
 	_debugId;
 	idx = 0;
@@ -12885,20 +12901,20 @@ var gD = class e {
 	constructor() {
 		this._debugId = e._nextId++;
 	}
-}, _D = class {
+}, yD = class {
 	leftOp;
 	rightOp;
 	leftToRight;
 	constructor(e) {
 		this.leftOp = e, this.rightOp = null, this.leftToRight = !0;
 	}
-}, vD = class {
+}, bD = class {
 	op1;
 	op2;
 	constructor(e, t) {
 		this.op1 = e, this.op2 = t;
 	}
-}, yD = class {
+}, xD = class {
 	bot = {
 		x: 0,
 		y: 0,
@@ -12923,13 +12939,13 @@ var gD = class e {
 	vertexTop = null;
 	localMin = null;
 	isLeftBound = !1;
-	joinWith = mD.None;
-}, bD;
+	joinWith = gD.None;
+}, SD;
 (function(e) {
 	function t(e, t, n, r) {
 		if ((e.flags & Q.LocalMin) !== Q.None) return;
 		e.flags |= Q.LocalMin;
-		let i = new dD(e, t, n);
+		let i = new pD(e, t, n);
 		r.push(i);
 	}
 	e.addLocMin = t;
@@ -12938,9 +12954,9 @@ var gD = class e {
 			let s = e[o], c = null, l = null;
 			for (let e = 0, t = s.length; e < t; e++) {
 				let t = s[e];
-				if (c === null) c = new uD(t, Q.None, null), a.push(c), l = c;
+				if (c === null) c = new fD(t, Q.None, null), a.push(c), l = c;
 				else if (l.pt.x !== t.x || l.pt.y !== t.y) {
-					let e = new uD(t, Q.None, l);
+					let e = new fD(t, Q.None, l);
 					a.push(e), l.next = e, l = e;
 				}
 			}
@@ -12963,9 +12979,9 @@ var gD = class e {
 		}
 	}
 	e.addPathsToVertexList = n;
-})(bD ||= {});
-var xD = class e {
-	cliptype = eD.NoClip;
+})(SD ||= {});
+var CD = class e {
+	cliptype = nD.NoClip;
 	fillrule = J.EvenOdd;
 	actives = null;
 	sel = null;
@@ -12973,7 +12989,7 @@ var xD = class e {
 	intersectList = [];
 	vertexList = [];
 	outrecList = [];
-	scanlineHeap = new lD();
+	scanlineHeap = new dD();
 	scanlineSet = /* @__PURE__ */ new Set();
 	scanlineArr = [];
 	useScanlineArray = !1;
@@ -12994,7 +13010,7 @@ var xD = class e {
 	}
 	setZ(t, n, r) {
 		let i = this.getZCallback();
-		i && (e.getPolyType(t) === tD.Subject ? (r.z = this.xyEqual(r, t.bot) ? t.bot.z : this.xyEqual(r, t.top) ? t.top.z : this.xyEqual(r, n.bot) ? n.bot.z : this.xyEqual(r, n.top) ? n.top.z : 0, i(t.bot, t.top, n.bot, n.top, r)) : (r.z = this.xyEqual(r, n.bot) ? n.bot.z : this.xyEqual(r, n.top) ? n.top.z : this.xyEqual(r, t.bot) ? t.bot.z : this.xyEqual(r, t.top) ? t.top.z : 0, i(n.bot, n.top, t.bot, t.top, r)));
+		i && (e.getPolyType(t) === rD.Subject ? (r.z = this.xyEqual(r, t.bot) ? t.bot.z : this.xyEqual(r, t.top) ? t.top.z : this.xyEqual(r, n.bot) ? n.bot.z : this.xyEqual(r, n.top) ? n.top.z : 0, i(t.bot, t.top, n.bot, n.top, r)) : (r.z = this.xyEqual(r, n.bot) ? n.bot.z : this.xyEqual(r, n.top) ? n.top.z : this.xyEqual(r, t.bot) ? t.bot.z : this.xyEqual(r, t.top) ? t.top.z : 0, i(n.bot, n.top, t.bot, t.top, r)));
 	}
 	static isOdd(e) {
 		return !!(e & 1);
@@ -13132,12 +13148,12 @@ var xD = class e {
 		this.addPaths(r, t, n);
 	}
 	addPaths(e, t, n = !1) {
-		n && (this.hasOpenPaths = !0), this.isSortedMinimaList = !1, bD.addPathsToVertexList(e, t, n, this.minimaList, this.vertexList);
+		n && (this.hasOpenPaths = !0), this.isSortedMinimaList = !1, SD.addPathsToVertexList(e, t, n, this.minimaList, this.vertexList);
 	}
 	addReuseableData(e) {
 		if (e.minimaList.length !== 0) {
 			this.isSortedMinimaList = !1;
-			for (let t of e.minimaList) this.minimaList.push(new dD(t.vertex, t.polytype, t.isOpen)), t.isOpen && (this.hasOpenPaths = !0);
+			for (let t of e.minimaList) this.minimaList.push(new pD(t.vertex, t.polytype, t.isOpen)), t.isOpen && (this.hasOpenPaths = !0);
 		}
 	}
 	deleteFromAEL(e) {
@@ -13157,7 +13173,7 @@ var xD = class e {
 				n.pt.x < e.left && (e.left = n.pt.x), n.pt.x > e.right && (e.right = n.pt.x), n.pt.y < e.top && (e.top = n.pt.y), n.pt.y > e.bottom && (e.bottom = n.pt.y), n = n.next;
 			while (n !== t);
 		}
-		return rD.isEmpty(e) ? {
+		return aD.isEmpty(e) ? {
 			left: 0,
 			top: 0,
 			right: 0,
@@ -13165,7 +13181,7 @@ var xD = class e {
 		} : e;
 	}
 	executeInternal(e, t) {
-		if (e === eD.NoClip) return;
+		if (e === nD.NoClip) return;
 		this.fillrule = t, this.cliptype = e, this.reset();
 		let n = this.popScanline();
 		if (!n.success) return;
@@ -13184,7 +13200,7 @@ var xD = class e {
 	insertLocalMinimaIntoAEL(t) {
 		for (; this.hasLocMinAtY(t);) {
 			let t = this.popLocalMinima(), n;
-			(t.vertex.flags & Q.OpenStart) === Q.None ? (n = new yD(), n.bot = {
+			(t.vertex.flags & Q.OpenStart) === Q.None ? (n = new xD(), n.bot = {
 				x: t.vertex.pt.x,
 				y: t.vertex.pt.y,
 				z: t.vertex.pt.z || 0
@@ -13194,7 +13210,7 @@ var xD = class e {
 				z: t.vertex.prev.pt.z || 0
 			}, n.outrec = null, n.localMin = t, e.setDx(n)) : n = null;
 			let r;
-			(t.vertex.flags & Q.OpenEnd) === Q.None ? (r = new yD(), r.bot = {
+			(t.vertex.flags & Q.OpenEnd) === Q.None ? (r = new xD(), r.bot = {
 				x: t.vertex.pt.x,
 				y: t.vertex.pt.y,
 				z: t.vertex.pt.z || 0
@@ -13282,12 +13298,12 @@ var xD = class e {
 					if (n.leftToRight) {
 						for (; n.leftOp.next.pt.y === t && n.leftOp.next.pt.x <= e.leftOp.pt.x;) n.leftOp = n.leftOp.next;
 						for (; e.leftOp.prev.pt.y === t && e.leftOp.prev.pt.x <= n.leftOp.pt.x;) e.leftOp = e.leftOp.prev;
-						let r = new vD(this.duplicateOp(n.leftOp, !0), this.duplicateOp(e.leftOp, !1));
+						let r = new bD(this.duplicateOp(n.leftOp, !0), this.duplicateOp(e.leftOp, !1));
 						this.horzJoinList.push(r);
 					} else {
 						for (; n.leftOp.prev.pt.y === t && n.leftOp.prev.pt.x <= e.leftOp.pt.x;) n.leftOp = n.leftOp.prev;
 						for (; e.leftOp.next.pt.y === t && e.leftOp.next.pt.x <= n.leftOp.pt.x;) e.leftOp = e.leftOp.next;
-						let r = new vD(this.duplicateOp(e.leftOp, !0), this.duplicateOp(n.leftOp, !1));
+						let r = new bD(this.duplicateOp(e.leftOp, !0), this.duplicateOp(n.leftOp, !1));
 						this.horzJoinList.push(r);
 					}
 				}
@@ -13314,7 +13330,7 @@ var xD = class e {
 		return e.rightOp === null ? t.rightOp === null ? 0 : 1 : t.rightOp === null ? -1 : e.leftOp.pt.x - t.leftOp.pt.x;
 	}
 	duplicateOp(e, t) {
-		let n = new pD(e.pt, e.outrec);
+		let n = new hD(e.pt, e.outrec);
 		return t ? (n.next = e.next, n.next.prev = n, n.prev = e, e.next = n) : (n.prev = e.prev, n.prev.next = n, n.next = e, e.prev = n), n;
 	}
 	getRealOutRec(e) {
@@ -13484,7 +13500,7 @@ var xD = class e {
 		r && e.setDx(t);
 	}
 	addToHorzSegList(e) {
-		e.outrec.isOpen || this.horzSegList.push(new _D(e));
+		e.outrec.isOpen || this.horzSegList.push(new yD(e));
 	}
 	addNewIntersectNode(t, n, r) {
 		let i = X.getLineIntersectPt(t.bot, t.top, n.bot, n.top), a;
@@ -13496,7 +13512,7 @@ var xD = class e {
 			let i = Math.abs(t.dx), o = Math.abs(n.dx);
 			i > 100 && o > 100 ? a = i > o ? X.getClosestPtOnSegment(a, t.bot, t.top) : X.getClosestPtOnSegment(a, n.bot, n.top) : i > 100 ? a = X.getClosestPtOnSegment(a, t.bot, t.top) : o > 100 ? a = X.getClosestPtOnSegment(a, n.bot, n.top) : (a.y < r ? a.y = r : a.y = this.currentBotY, i < o ? a.x = e.topX(t, a.y) : a.x = e.topX(n, a.y));
 		}
-		let o = fD(a, t, n);
+		let o = mD(a, t, n);
 		this.intersectList.push(o);
 	}
 	extractFromSEL(e) {
@@ -13548,7 +13564,7 @@ var xD = class e {
 		else {
 			let t = this.actives;
 			for (; t.nextInAEL !== null && this.isValidAelOrder(t.nextInAEL, e);) t = t.nextInAEL;
-			t.joinWith === mD.Right && (t = t.nextInAEL), e.nextInAEL = t.nextInAEL, t.nextInAEL !== null && (t.nextInAEL.prevInAEL = e), e.prevInAEL = t, t.nextInAEL = e;
+			t.joinWith === gD.Right && (t = t.nextInAEL), e.nextInAEL = t.nextInAEL, t.nextInAEL !== null && (t.nextInAEL.prevInAEL = e), e.prevInAEL = t, t.nextInAEL = e;
 		}
 	}
 	insertRightEdge(e, t) {
@@ -13558,9 +13574,9 @@ var xD = class e {
 		let n = this.actives;
 		if (this.fillrule === J.EvenOdd) {
 			let r = 0, i = 0;
-			for (; n !== t;) e.getPolyType(n) === tD.Clip ? i++ : e.isOpen(n) || r++, n = n.nextInAEL;
+			for (; n !== t;) e.getPolyType(n) === rD.Clip ? i++ : e.isOpen(n) || r++, n = n.nextInAEL;
 			t.windCount = +!!e.isOdd(r), t.windCount2 = +!!e.isOdd(i);
-		} else for (; n !== t;) e.getPolyType(n) === tD.Clip ? t.windCount2 += n.windDx : e.isOpen(n) || (t.windCount += n.windDx), n = n.nextInAEL;
+		} else for (; n !== t;) e.getPolyType(n) === rD.Clip ? t.windCount2 += n.windDx : e.isOpen(n) || (t.windCount += n.windDx), n = n.nextInAEL;
 	}
 	setWindCountForClosedPathEdge(t) {
 		let n = t.prevInAEL, r = e.getPolyType(t);
@@ -13580,8 +13596,8 @@ var xD = class e {
 			default: n = e.windCount !== 0, t = e.windCount2 !== 0;
 		}
 		switch (this.cliptype) {
-			case eD.Intersection: return t;
-			case eD.Union: return !n && !t;
+			case nD.Intersection: return t;
+			case nD.Union: return !n && !t;
 			default: return !t;
 		}
 	}
@@ -13596,12 +13612,12 @@ var xD = class e {
 			case J.NonZero: if (Math.abs(t.windCount) !== 1) return !1;
 		}
 		switch (this.cliptype) {
-			case eD.Intersection: return this.fillrule === J.Positive ? t.windCount2 > 0 : this.fillrule === J.Negative ? t.windCount2 < 0 : t.windCount2 !== 0;
-			case eD.Union: return this.fillrule === J.Positive ? t.windCount2 <= 0 : this.fillrule === J.Negative ? t.windCount2 >= 0 : t.windCount2 === 0;
-			case eD.Difference:
+			case nD.Intersection: return this.fillrule === J.Positive ? t.windCount2 > 0 : this.fillrule === J.Negative ? t.windCount2 < 0 : t.windCount2 !== 0;
+			case nD.Union: return this.fillrule === J.Positive ? t.windCount2 <= 0 : this.fillrule === J.Negative ? t.windCount2 >= 0 : t.windCount2 === 0;
+			case nD.Difference:
 				let n = this.fillrule === J.Positive ? t.windCount2 <= 0 : this.fillrule === J.Negative ? t.windCount2 >= 0 : t.windCount2 === 0;
-				return e.getPolyType(t) === tD.Subject ? n : !n;
-			case eD.Xor: return !0;
+				return e.getPolyType(t) === rD.Subject ? n : !n;
+			case nD.Xor: return !0;
 			default: return !1;
 		}
 	}
@@ -13613,20 +13629,20 @@ var xD = class e {
 			let r = e.getPrevHotEdge(t);
 			r === null ? (a.owner = null, i ? this.setSides(a, t, n) : this.setSides(a, n, t)) : (this.usingPolytree && this.setOwner(a, r.outrec), a.owner = r.outrec, this.outrecIsAscending(r) === i ? this.setSides(a, n, t) : this.setSides(a, t, n));
 		}
-		let o = new pD(r, a);
+		let o = new hD(r, a);
 		return a.pts = o, o;
 	}
 	outrecIsAscending(e) {
 		return e === e.outrec.frontEdge;
 	}
 	newOutRec() {
-		let e = new gD();
+		let e = new vD();
 		return e.idx = this.outrecList.length, this.outrecList.push(e), e;
 	}
 	startOpenPath(e, t) {
 		let n = this.newOutRec();
 		n.isOpen = !0, e.windDx > 0 ? (n.frontEdge = e, n.backEdge = null) : (n.frontEdge = null, n.backEdge = e), e.outrec = n;
-		let r = new pD(t, n);
+		let r = new hD(t, n);
 		return n.pts = r, r;
 	}
 	checkJoinLeft(t, n, r = !1) {
@@ -13635,7 +13651,7 @@ var xD = class e {
 			if (r) {
 				if (this.perpendicDistFromLineSqrd(n, i.bot, i.top) > .25) return;
 			} else if (t.curX !== i.curX) return;
-			X.isCollinear(t.top, n, i.top) && (t.outrec.idx === i.outrec.idx ? this.addLocalMaxPoly(i, t, n) : t.outrec.idx < i.outrec.idx ? this.joinOutrecPaths(t, i) : this.joinOutrecPaths(i, t), i.joinWith = mD.Right, t.joinWith = mD.Left);
+			X.isCollinear(t.top, n, i.top) && (t.outrec.idx === i.outrec.idx ? this.addLocalMaxPoly(i, t, n) : t.outrec.idx < i.outrec.idx ? this.joinOutrecPaths(t, i) : this.joinOutrecPaths(i, t), i.joinWith = gD.Right, t.joinWith = gD.Left);
 		}
 	}
 	checkJoinRight(t, n, r = !1) {
@@ -13644,7 +13660,7 @@ var xD = class e {
 			if (r) {
 				if (this.perpendicDistFromLineSqrd(n, i.bot, i.top) > .25) return;
 			} else if (t.curX !== i.curX) return;
-			X.isCollinear(t.top, n, i.top) && (t.outrec.idx === i.outrec.idx ? this.addLocalMaxPoly(t, i, n) : t.outrec.idx < i.outrec.idx ? this.joinOutrecPaths(t, i) : this.joinOutrecPaths(i, t), t.joinWith = mD.Right, i.joinWith = mD.Left);
+			X.isCollinear(t.top, n, i.top) && (t.outrec.idx === i.outrec.idx ? this.addLocalMaxPoly(t, i, n) : t.outrec.idx < i.outrec.idx ? this.joinOutrecPaths(t, i) : this.joinOutrecPaths(i, t), t.joinWith = gD.Right, i.joinWith = gD.Left);
 		}
 	}
 	perpendicDistFromLineSqrd(e, t, n) {
@@ -13655,9 +13671,9 @@ var xD = class e {
 		let i = null;
 		if (this.hasOpenPaths && (e.isOpen(t) || e.isOpen(n))) {
 			if (e.isOpen(t) && e.isOpen(n)) return;
-			if (e.isOpen(n) && ([t, n] = e.swapActives(t, n)), this.isJoined(n) && this.split(n, r), this.cliptype === eD.Union) {
+			if (e.isOpen(n) && ([t, n] = e.swapActives(t, n)), this.isJoined(n) && this.split(n, r), this.cliptype === nD.Union) {
 				if (!e.isHotEdge(n)) return;
-			} else if (n.localMin.polytype === tD.Subject) return;
+			} else if (n.localMin.polytype === rD.Subject) return;
 			switch (this.fillrule) {
 				case J.Positive:
 					if (n.windCount !== 1) return;
@@ -13693,7 +13709,7 @@ var xD = class e {
 		let s = a === 0 || a === 1, c = o === 0 || o === 1;
 		if ((e.isHotEdge(t) || s) && (e.isHotEdge(n) || c)) {
 			if (e.isHotEdge(t) && e.isHotEdge(n)) {
-				if (a !== 0 && a !== 1 || o !== 0 && o !== 1 || t.localMin.polytype !== n.localMin.polytype && this.cliptype !== eD.Xor) i = this.addLocalMaxPoly(t, n, r), i && this.setZ(t, n, i.pt);
+				if (a !== 0 && a !== 1 || o !== 0 && o !== 1 || t.localMin.polytype !== n.localMin.polytype && this.cliptype !== nD.Xor) i = this.addLocalMaxPoly(t, n, r), i && this.setZ(t, n, i.pt);
 				else if (e.isFront(t) || t.outrec === n.outrec) {
 					i = this.addLocalMaxPoly(t, n, r), i && this.setZ(t, n, i.pt);
 					let e = this.addLocalMinPoly(t, n, r);
@@ -13719,14 +13735,14 @@ var xD = class e {
 				if (!e.isSamePolyType(t, n)) i = this.addLocalMinPoly(t, n, r), this.setZ(t, n, i.pt);
 				else if (a === 1 && o === 1) {
 					switch (i = null, this.cliptype) {
-						case eD.Union:
+						case nD.Union:
 							if (s > 0 && c > 0) return;
 							i = this.addLocalMinPoly(t, n, r);
 							break;
-						case eD.Difference:
-							(e.getPolyType(t) === tD.Clip && s > 0 && c > 0 || e.getPolyType(t) === tD.Subject && s <= 0 && c <= 0) && (i = this.addLocalMinPoly(t, n, r));
+						case nD.Difference:
+							(e.getPolyType(t) === rD.Clip && s > 0 && c > 0 || e.getPolyType(t) === rD.Subject && s <= 0 && c <= 0) && (i = this.addLocalMinPoly(t, n, r));
 							break;
-						case eD.Xor:
+						case nD.Xor:
 							i = this.addLocalMinPoly(t, n, r);
 							break;
 						default:
@@ -13754,10 +13770,10 @@ var xD = class e {
 		return t.bot.y !== i || t.localMin.vertex.pt.y !== i ? n.isLeftBound : t.isLeftBound === a ? X.isCollinear(e.prevPrevVertex(t).pt, t.bot, t.top) ? !0 : X.crossProduct(e.prevPrevVertex(t).pt, n.bot, e.prevPrevVertex(n).pt) > 0 === a : a;
 	}
 	isJoined(e) {
-		return e.joinWith !== mD.None;
+		return e.joinWith !== gD.None;
 	}
 	split(e, t) {
-		e.joinWith === mD.Right ? (e.joinWith = mD.None, e.nextInAEL.joinWith = mD.None, this.addLocalMinPoly(e, e.nextInAEL, t, !0)) : (e.joinWith = mD.None, e.prevInAEL.joinWith = mD.None, this.addLocalMinPoly(e.prevInAEL, e, t, !0));
+		e.joinWith === gD.Right ? (e.joinWith = gD.None, e.nextInAEL.joinWith = gD.None, this.addLocalMinPoly(e, e.nextInAEL, t, !0)) : (e.joinWith = gD.None, e.prevInAEL.joinWith = gD.None, this.addLocalMinPoly(e.prevInAEL, e, t, !0));
 	}
 	setSides(e, t, n) {
 		e.frontEdge = t, e.backEdge = n;
@@ -13779,7 +13795,7 @@ var xD = class e {
 		let r = t.outrec, i = e.isFront(t), a = r.pts, o = a.next;
 		if (i && n.x === a.pt.x && n.y === a.pt.y) return a;
 		if (!i && n.x === o.pt.x && n.y === o.pt.y) return o;
-		let s = new pD(n, r);
+		let s = new hD(n, r);
 		return o.prev = s, s.prev = a, s.next = o, a.next = s, i && (r.pts = s), s;
 	}
 	addLocalMaxPoly(t, n, r) {
@@ -13865,10 +13881,10 @@ var xD = class e {
 		}
 	}
 	checkBounds(t) {
-		return t.pts === null ? !1 : !rD.isEmpty(t.bounds) || (this.cleanCollinear(t), t.pts === null || !e.buildPath(t.pts, this.reverseSolution, !1, t.path) ? !1 : (t.bounds = X.getBounds(t.path), !0));
+		return t.pts === null ? !1 : !aD.isEmpty(t.bounds) || (this.cleanCollinear(t), t.pts === null || !e.buildPath(t.pts, this.reverseSolution, !1, t.path) ? !1 : (t.bounds = X.getBounds(t.path), !0));
 	}
 	recursiveCheckOwners(e, t) {
-		if (!(e.polypath !== null || rD.isEmpty(e.bounds))) {
+		if (!(e.polypath !== null || aD.isEmpty(e.bounds))) {
 			for (; e.owner !== null && !(e.owner.splits !== null && this.checkSplitOwner(e, e.owner.splits) || e.owner.pts !== null && this.checkBounds(e.owner) && this.containsRect(e.owner.bounds, e.bounds) && this.path1InsidePath2(e.pts, e.owner.pts));) e.owner = e.owner.owner;
 			e.owner === null ? e.polypath = t.addChild(e.path) : (e.owner.polypath === null && this.recursiveCheckOwners(e.owner, t), e.polypath = e.owner.polypath.addChild(e.path));
 		}
@@ -13921,13 +13937,13 @@ var xD = class e {
 		let c = this.areaTriangle(a, n.pt, n.next.pt), l = Math.abs(c);
 		if (a.x === r.pt.x && a.y === r.pt.y || a.x === i.pt.x && a.y === i.pt.y) i.prev = r, r.next = i;
 		else {
-			let e = new pD(a, t);
+			let e = new hD(a, t);
 			e.prev = r, e.next = i, i.prev = e, r.next = e;
 		}
 		if (!(l > 1) || !(l > s) && c > 0 != o > 0) return;
 		let u = this.newOutRec();
 		u.owner = t.owner, n.outrec = u, n.next.outrec = u;
-		let d = new pD(a, u);
+		let d = new hD(a, u);
 		d.prev = n.next, d.next = n, u.pts = d, n.prev = d, n.next.next = d, this.usingPolytree && (this.path1InsidePath2(r, d) ? (u.splits === null && (u.splits = []), u.splits.push(t.idx)) : (t.splits === null && (t.splits = []), t.splits.push(u.idx)));
 	}
 	static areaOutPt(e) {
@@ -13958,7 +13974,7 @@ var xD = class e {
 		}
 		return !1;
 	}
-}, SD = class extends xD {
+}, wD = class extends CD {
 	zCallback;
 	getZCallback() {
 		return this.zCallback;
@@ -13973,13 +13989,13 @@ var xD = class e {
 		super.addPaths(e, t, n);
 	}
 	addSubject(e) {
-		this.addPaths(e, tD.Subject);
+		this.addPaths(e, rD.Subject);
 	}
 	addOpenSubject(e) {
-		this.addPaths(e, tD.Subject, !0);
+		this.addPaths(e, rD.Subject, !0);
 	}
 	addClip(e) {
-		this.addPaths(e, tD.Clip);
+		this.addPaths(e, rD.Clip);
 	}
 	execute(e, t, n, r) {
 		if (Array.isArray(n)) {
@@ -14003,7 +14019,7 @@ var xD = class e {
 			return this.clearSolutionOnly(), this.succeeded;
 		}
 	}
-}, CD = class extends xD {
+}, TD = class extends CD {
 	zCallback;
 	scale;
 	invScale;
@@ -14029,7 +14045,7 @@ var xD = class e {
 			let r = this.outrecList[n++];
 			if (r.pts === null) continue;
 			let i = [];
-			r.isOpen ? xD.buildPath(r.pts, this.reverseSolution, !0, i) && t.push(this.scalePathDFromInt(i, this.invScale)) : (this.cleanCollinear(r), xD.buildPath(r.pts, this.reverseSolution, !1, i) && e.push(this.scalePathDFromInt(i, this.invScale)));
+			r.isOpen ? CD.buildPath(r.pts, this.reverseSolution, !0, i) && t.push(this.scalePathDFromInt(i, this.invScale)) : (this.cleanCollinear(r), CD.buildPath(r.pts, this.reverseSolution, !1, i) && e.push(this.scalePathDFromInt(i, this.invScale)));
 		}
 		return !0;
 	}
@@ -14041,34 +14057,34 @@ var xD = class e {
 			if (r.pts !== null) {
 				if (r.isOpen) {
 					let e = [];
-					xD.buildPath(r.pts, this.reverseSolution, !0, e) && t.push(this.scalePathDFromInt(e, this.invScale));
+					CD.buildPath(r.pts, this.reverseSolution, !0, e) && t.push(this.scalePathDFromInt(e, this.invScale));
 				} else this.checkBounds(r) && this.recursiveCheckOwners(r, e);
 			}
 		}
 	}
 	addPath(e, t, n = !1) {
-		super.addPath(wD.scalePath64(e, this.scale), t, n);
+		super.addPath(ED.scalePath64(e, this.scale), t, n);
 	}
 	addPaths(e, t, n = !1) {
-		super.addPaths(wD.scalePaths64(e, this.scale), t, n);
+		super.addPaths(ED.scalePaths64(e, this.scale), t, n);
 	}
 	addSubject(e) {
-		this.addPath(e, tD.Subject);
+		this.addPath(e, rD.Subject);
 	}
 	addOpenSubject(e) {
-		this.addPath(e, tD.Subject, !0);
+		this.addPath(e, rD.Subject, !0);
 	}
 	addClip(e) {
-		this.addPath(e, tD.Clip);
+		this.addPath(e, rD.Clip);
 	}
 	addSubjectPaths(e) {
-		this.addPaths(e, tD.Subject);
+		this.addPaths(e, rD.Subject);
 	}
 	addOpenSubjectPaths(e) {
-		this.addPaths(e, tD.Subject, !0);
+		this.addPaths(e, rD.Subject, !0);
 	}
 	addClipPaths(e) {
-		this.addPaths(e, tD.Clip);
+		this.addPaths(e, rD.Clip);
 	}
 	execute(e, t, n, r) {
 		if (Array.isArray(n)) {
@@ -14097,7 +14113,7 @@ var xD = class e {
 			return this.clearSolutionOnly(), o;
 		}
 	}
-}, wD;
+}, ED;
 (function(e) {
 	function t(e) {
 		let t = 0, n = e.length;
@@ -14145,33 +14161,33 @@ var xD = class e {
 		return n;
 	}
 	e.scalePathsD = o;
-})(wD ||= {});
+})(ED ||= {});
 // node_modules/clipper2-ts/dist/Offset.js
-var TD;
+var DD;
 (function(e) {
 	e[e.Miter = 0] = "Miter", e[e.Square = 1] = "Square", e[e.Bevel = 2] = "Bevel", e[e.Round = 3] = "Round";
-})(TD ||= {});
-var ED;
+})(DD ||= {});
+var OD;
 (function(e) {
 	e[e.Polygon = 0] = "Polygon", e[e.Joined = 1] = "Joined", e[e.Butt = 2] = "Butt", e[e.Square = 3] = "Square", e[e.Round = 4] = "Round";
-})(ED ||= {});
-var DD = class {
+})(OD ||= {});
+var kD = class {
 	inPaths;
 	joinType;
 	endType;
 	pathsReversed;
 	lowestPathIdx;
-	constructor(e, t, n = ED.Polygon) {
+	constructor(e, t, n = OD.Polygon) {
 		this.joinType = t, this.endType = n;
-		let r = n === ED.Polygon || n === ED.Joined;
+		let r = n === OD.Polygon || n === OD.Joined;
 		this.inPaths = [];
-		for (let t of e) this.inPaths.push(OD.stripDuplicates(t, r));
-		if (n === ED.Polygon) {
-			let e = OD.getLowestPathInfo(this.inPaths);
+		for (let t of e) this.inPaths.push(AD.stripDuplicates(t, r));
+		if (n === OD.Polygon) {
+			let e = AD.getLowestPathInfo(this.inPaths);
 			this.lowestPathIdx = e.idx, this.pathsReversed = this.lowestPathIdx >= 0 && e.isNegArea;
 		} else this.lowestPathIdx = -1, this.pathsReversed = !1;
 	}
-}, OD = class e {
+}, AD = class e {
 	static Tolerance = 1e-12;
 	static arc_const = .002;
 	groupList = [];
@@ -14185,8 +14201,8 @@ var DD = class {
 	stepsPerRad = 0;
 	stepSin = 0;
 	stepCos = 0;
-	joinType = TD.Bevel;
-	endType = ED.Polygon;
+	joinType = DD.Bevel;
+	endType = OD.Polygon;
 	arcTolerance = 0;
 	mergeGroups = !0;
 	miterLimit = 2;
@@ -14209,16 +14225,16 @@ var DD = class {
 		this.addPaths(r, t, n);
 	}
 	addPaths(e, t, n) {
-		e.length !== 0 && this.groupList.push(new DD(e, t, n));
+		e.length !== 0 && this.groupList.push(new kD(e, t, n));
 	}
 	calcSolutionCapacity() {
 		let e = 0;
-		for (let t of this.groupList) e += t.endType === ED.Joined ? t.inPaths.length * 2 : t.inPaths.length;
+		for (let t of this.groupList) e += t.endType === OD.Joined ? t.inPaths.length * 2 : t.inPaths.length;
 		return e;
 	}
 	checkPathsReversed() {
 		let e = !1;
-		for (let t of this.groupList) if (t.endType === ED.Polygon) {
+		for (let t of this.groupList) if (t.endType === OD.Polygon) {
 			e = t.pathsReversed;
 			break;
 		}
@@ -14233,8 +14249,8 @@ var DD = class {
 		this.delta = t, this.mitLimSqr = this.miterLimit <= 1 ? 2 : 2 / e.sqr(this.miterLimit);
 		for (let e of this.groupList) this.doGroupOffset(e);
 		if (this.groupList.length === 0) return;
-		let n = this.checkPathsReversed(), r = n ? J.Negative : J.Positive, i = new SD();
-		i.preserveCollinear = this.preserveCollinear, i.reverseSolution = this.reverseSolution !== n, i.zCallback = this.ZCB, i.addSubject(this.solution), this.solutionTree === null ? i.execute(eD.Union, r, this.solution) : i.execute(eD.Union, r, this.solutionTree);
+		let n = this.checkPathsReversed(), r = n ? J.Negative : J.Positive, i = new wD();
+		i.preserveCollinear = this.preserveCollinear, i.reverseSolution = this.reverseSolution !== n, i.zCallback = this.ZCB, i.addSubject(this.solution), this.solutionTree === null ? i.execute(nD.Union, r, this.solution) : i.execute(nD.Union, r, this.solutionTree);
 	}
 	execute(e, t) {
 		if (Array.isArray(t)) {
@@ -14425,7 +14441,7 @@ var DD = class {
 			x: this.normals[r].x * this.groupDelta,
 			y: this.normals[r].y * this.groupDelta
 		};
-		n === r && nD.negate(o), this.pathOut.push({
+		n === r && iD.negate(o), this.pathOut.push({
 			x: Math.round(a.x + o.x),
 			y: Math.round(a.y + o.y)
 		});
@@ -14451,15 +14467,15 @@ var DD = class {
 		let a = X.crossProductD(this.normals[r], this.normals[i]), o = X.dotProductD(this.normals[r], this.normals[i]);
 		if (a > 1 ? a = 1 : a < -1 && (a = -1), this.deltaCallback !== null && (this.groupDelta = this.deltaCallback(n, this.normals, r, i), t.pathsReversed && (this.groupDelta = -this.groupDelta)), Math.abs(this.groupDelta) < e.Tolerance) this.pathOut.push(n[r]);
 		else if (o > -.999 && a * this.groupDelta < 0) this.pathOut.push(this.getPerpendic(n[r], this.normals[i])), this.pathOut.push(n[r]), this.pathOut.push(this.getPerpendic(n[r], this.normals[r]));
-		else if (o > .999 && this.joinType !== TD.Round) this.doMiter(n, r, i, o);
+		else if (o > .999 && this.joinType !== DD.Round) this.doMiter(n, r, i, o);
 		else switch (this.joinType) {
-			case TD.Miter:
+			case DD.Miter:
 				o > this.mitLimSqr - 1 ? this.doMiter(n, r, i, o) : this.doSquare(n, r, i);
 				break;
-			case TD.Round:
+			case DD.Round:
 				this.doRound(n, r, i, Math.atan2(a, o));
 				break;
-			case TD.Bevel:
+			case DD.Bevel:
 				this.doBevel(n, r, i);
 				break;
 			default: this.doSquare(n, r, i);
@@ -14481,10 +14497,10 @@ var DD = class {
 		let r = n.length - 1;
 		if (this.deltaCallback !== null && (this.groupDelta = this.deltaCallback(n, this.normals, 0, 0)), Math.abs(this.groupDelta) < e.Tolerance) this.pathOut.push(n[0]);
 		else switch (this.endType) {
-			case ED.Butt:
+			case OD.Butt:
 				this.doBevel(n, 0, 0);
 				break;
-			case ED.Round:
+			case OD.Round:
 				this.doRound(n, 0, 0, Math.PI);
 				break;
 			default: this.doSquare(n, 0, 0);
@@ -14496,10 +14512,10 @@ var DD = class {
 		};
 		if (this.normals[0] = this.normals[r], this.deltaCallback !== null && (this.groupDelta = this.deltaCallback(n, this.normals, r, r)), Math.abs(this.groupDelta) < e.Tolerance) this.pathOut.push(n[r]);
 		else switch (this.endType) {
-			case ED.Butt:
+			case OD.Butt:
 				this.doBevel(n, r, r);
 				break;
-			case ED.Round:
+			case OD.Round:
 				this.doRound(n, r, r, Math.PI);
 				break;
 			default: this.doSquare(n, r, r);
@@ -14508,9 +14524,9 @@ var DD = class {
 		this.solution.push([...this.pathOut]);
 	}
 	doGroupOffset(t) {
-		t.endType === ED.Polygon ? (t.lowestPathIdx < 0 && (this.delta = Math.abs(this.delta)), this.groupDelta = t.pathsReversed ? -this.delta : this.delta) : this.groupDelta = Math.abs(this.delta);
+		t.endType === OD.Polygon ? (t.lowestPathIdx < 0 && (this.delta = Math.abs(this.delta)), this.groupDelta = t.pathsReversed ? -this.delta : this.delta) : this.groupDelta = Math.abs(this.delta);
 		let n = Math.abs(this.groupDelta);
-		if (this.joinType = t.joinType, this.endType = t.endType, t.joinType === TD.Round || t.endType === ED.Round) {
+		if (this.joinType = t.joinType, this.endType = t.endType, t.joinType === DD.Round || t.endType === OD.Round) {
 			let t = this.arcTolerance > .01 ? this.arcTolerance : n * e.arc_const, r = Math.PI / Math.acos(1 - t / n);
 			this.stepSin = Math.sin(2 * Math.PI / r), this.stepCos = Math.cos(2 * Math.PI / r), this.groupDelta < 0 && (this.stepSin = -this.stepSin), this.stepsPerRad = r / (2 * Math.PI);
 		}
@@ -14519,7 +14535,7 @@ var DD = class {
 			let r = n.length;
 			if (r === 1) {
 				let r = n[0];
-				if (this.deltaCallback !== null && (this.groupDelta = this.deltaCallback(n, this.normals, 0, 0), t.pathsReversed && (this.groupDelta = -this.groupDelta)), t.endType === ED.Round) {
+				if (this.deltaCallback !== null && (this.groupDelta = this.deltaCallback(n, this.normals, 0, 0), t.pathsReversed && (this.groupDelta = -this.groupDelta)), t.endType === OD.Round) {
 					let t = Math.ceil(this.stepsPerRad * 2 * Math.PI);
 					this.pathOut = e.ellipse(r, Math.abs(this.groupDelta), Math.abs(this.groupDelta), t);
 				} else {
@@ -14549,11 +14565,11 @@ var DD = class {
 					];
 				}
 				this.solution.push([...this.pathOut]);
-			} else switch (r === 2 && t.endType === ED.Joined && (this.endType = t.joinType === TD.Round ? ED.Round : ED.Square), this.buildNormals(n), this.endType) {
-				case ED.Polygon:
+			} else switch (r === 2 && t.endType === OD.Joined && (this.endType = t.joinType === DD.Round ? OD.Round : OD.Square), this.buildNormals(n), this.endType) {
+				case OD.Polygon:
 					this.offsetPolygon(t, n);
 					break;
-				case ED.Joined:
+				case OD.Joined:
 					this.offsetOpenJoined(t, n);
 					break;
 				default: this.offsetOpenPath(t, n);
@@ -14595,7 +14611,7 @@ var DD = class {
 		}
 		return c;
 	}
-}, kD = class {
+}, jD = class {
 	next = null;
 	prev = null;
 	pt;
@@ -14608,7 +14624,7 @@ var DD = class {
 (function(e) {
 	e[e.left = 0] = "left", e[e.top = 1] = "top", e[e.right = 2] = "right", e[e.bottom = 3] = "bottom", e[e.inside = 4] = "inside";
 })($ ||= {});
-var AD = class e {
+var MD = class e {
 	rect;
 	mp;
 	rectPath;
@@ -14622,17 +14638,17 @@ var AD = class e {
 	edges = [];
 	currIdx = -1;
 	constructor(e) {
-		this.currIdx = -1, this.rect = e, this.mp = rD.midPoint(e), this.rectPath = rD.asPath(this.rect), this.results = [], this.edges = [];
+		this.currIdx = -1, this.rect = e, this.mp = aD.midPoint(e), this.rectPath = aD.asPath(this.rect), this.results = [], this.edges = [];
 		for (let e = 0; e < 8; e++) this.edges[e] = [];
 	}
 	add(e, t = !1) {
 		let n = this.results.length, r;
-		if (n === 0 || t) r = new kD(e), this.results.push(r), r.ownerIdx = n, r.prev = r, r.next = r;
+		if (n === 0 || t) r = new jD(e), this.results.push(r), r.ownerIdx = n, r.prev = r, r.next = r;
 		else {
 			n--;
 			let t = this.results[n];
 			if (t && Z.equals(t.pt, e)) return t;
-			r = new kD(e), r.ownerIdx = n, r.next = t.next, t.next.prev = r, t.next = r, r.prev = t, this.results[n] = r;
+			r = new jD(e), r.ownerIdx = n, r.next = t.next, t.next.prev = r, t.next = r, r.prev = t, this.results[n] = r;
 		}
 		return r;
 	}
@@ -15020,7 +15036,7 @@ var AD = class e {
 		return t > 0;
 	}
 	executeInternal(t) {
-		if (t.length < 3 || rD.isEmpty(this.rect)) return;
+		if (t.length < 3 || aD.isEmpty(this.rect)) return;
 		let n = [], r = $.inside, i = r, a = r, o = t.length - 1, s = e.getLocation(this.rect, t[o]), c = s.location;
 		if (s.isOnRect) {
 			let n = o - 1;
@@ -15082,7 +15098,7 @@ var AD = class e {
 			this.add(p);
 		}
 		if (r === $.inside) {
-			if (l === $.inside || !rD.containsRect(this.pathBounds, this.rect) || !e.path1ContainsPath2(t, this.rectPath)) return;
+			if (l === $.inside || !aD.containsRect(this.pathBounds, this.rect) || !e.path1ContainsPath2(t, this.rectPath)) return;
 			let r = e.startLocsAreClockwise(n);
 			for (let t = 0; t < 4; t++) {
 				let n = r ? t : 3 - t;
@@ -15099,9 +15115,9 @@ var AD = class e {
 	}
 	execute(e) {
 		let t = [];
-		if (rD.isEmpty(this.rect)) return t;
-		for (let n of e) if (!(n.length < 3) && (this.pathBounds = X.getBounds(n), rD.intersects(this.rect, this.pathBounds))) {
-			if (rD.containsRect(this.rect, this.pathBounds)) t.push(n);
+		if (aD.isEmpty(this.rect)) return t;
+		for (let n of e) if (!(n.length < 3) && (this.pathBounds = X.getBounds(n), aD.intersects(this.rect, this.pathBounds))) {
+			if (aD.containsRect(this.rect, this.pathBounds)) t.push(n);
 			else {
 				this.executeInternal(n), this.checkEdges();
 				for (let e = 0; e < 4; ++e) this.tidyEdgePair(e, this.edges[e * 2], this.edges[e * 2 + 1]);
@@ -15184,14 +15200,14 @@ var AD = class e {
 		for (n.push(t.pt), r = t.next; r !== t;) n.push(r.pt), r = r.next;
 		return n;
 	}
-}, jD = class extends AD {
+}, ND = class extends MD {
 	constructor(e) {
 		super(e);
 	}
 	execute(e) {
 		let t = [];
-		if (rD.isEmpty(this.rect)) return t;
-		for (let n of e) if (!(n.length < 2) && (this.pathBounds = X.getBounds(n), rD.intersects(this.rect, this.pathBounds))) {
+		if (aD.isEmpty(this.rect)) return t;
+		for (let n of e) if (!(n.length < 2) && (this.pathBounds = X.getBounds(n), aD.intersects(this.rect, this.pathBounds))) {
 			this.executeInternalLines(n);
 			for (let e of this.results) {
 				let n = this.getPathLines(e);
@@ -15211,11 +15227,11 @@ var AD = class e {
 		return t;
 	}
 	executeInternalLines(e) {
-		if (this.results.length = 0, e.length < 2 || rD.isEmpty(this.rect)) return;
-		let t = $.inside, n = 1, r = e.length - 1, i = AD.getLocation(this.rect, e[0]), a = i.location;
+		if (this.results.length = 0, e.length < 2 || aD.isEmpty(this.rect)) return;
+		let t = $.inside, n = 1, r = e.length - 1, i = MD.getLocation(this.rect, e[0]), a = i.location;
 		if (i.isOnRect) {
 			for (; n <= r;) {
-				let r = AD.getLocation(this.rect, e[n]);
+				let r = MD.getLocation(this.rect, e[n]);
 				if (!r.isOnRect) {
 					t = r.location;
 					break;
@@ -15232,7 +15248,7 @@ var AD = class e {
 			t = a;
 			let i = this.getNextLocation(e, a, n, r);
 			if (a = i.location, n = i.index, n > r) break;
-			let o = e[n - 1], s = a, c = AD.getIntersection(this.rectPath, e[n], o, s);
+			let o = e[n - 1], s = a, c = MD.getIntersection(this.rectPath, e[n], o, s);
 			if (!c.intersects) {
 				++n;
 				continue;
@@ -15241,12 +15257,12 @@ var AD = class e {
 			if (s = c.newLocation, a === $.inside) this.add(l, !0);
 			else if (t !== $.inside) {
 				s = t;
-				let r = AD.getIntersection(this.rectPath, o, e[n], s).point;
+				let r = MD.getIntersection(this.rectPath, o, e[n], s).point;
 				this.add(r, !0), this.add(l);
 			} else this.add(l);
 		}
 	}
-}, MD;
+}, PD;
 (function(e) {
 	function t(e, t, n, r) {
 		let i = +!r, a = e.length, s = t.length, l = [];
@@ -15323,46 +15339,46 @@ var AD = class e {
 		return n;
 	}
 	function d(e, t) {
-		let n = [], r = new SD();
-		return r.addPaths(e, tD.Subject), r.execute(eD.Union, t, n), n;
+		let n = [], r = new wD();
+		return r.addPaths(e, rD.Subject), r.execute(nD.Union, t, n), n;
 	}
-})(MD ||= {});
-// node_modules/clipper2-ts/dist/Triangulation.js
-var ND;
-(function(e) {
-	e[e.success = 0] = "success", e[e.fail = 1] = "fail", e[e.noPolygons = 2] = "noPolygons", e[e.pathsIntersect = 3] = "pathsIntersect";
-})(ND ||= {});
-var PD;
-(function(e) {
-	e[e.loose = 0] = "loose", e[e.ascend = 1] = "ascend", e[e.descend = 2] = "descend";
 })(PD ||= {});
+// node_modules/clipper2-ts/dist/Triangulation.js
 var FD;
 (function(e) {
-	e[e.none = 0] = "none", e[e.collinear = 1] = "collinear", e[e.intersect = 2] = "intersect";
+	e[e.success = 0] = "success", e[e.fail = 1] = "fail", e[e.noPolygons = 2] = "noPolygons", e[e.pathsIntersect = 3] = "pathsIntersect";
 })(FD ||= {});
 var ID;
 (function(e) {
-	e[e.neither = 0] = "neither", e[e.left = 1] = "left", e[e.right = 2] = "right";
+	e[e.loose = 0] = "loose", e[e.ascend = 1] = "ascend", e[e.descend = 2] = "descend";
 })(ID ||= {});
-var LD = class {
+var LD;
+(function(e) {
+	e[e.none = 0] = "none", e[e.collinear = 1] = "collinear", e[e.intersect = 2] = "intersect";
+})(LD ||= {});
+var RD;
+(function(e) {
+	e[e.neither = 0] = "neither", e[e.left = 1] = "left", e[e.right = 2] = "right";
+})(RD ||= {});
+var zD = class {
 	pt;
 	edges = [];
 	innerLM = !1;
 	constructor(e) {
 		this.pt = e;
 	}
-}, RD = class {
+}, BD = class {
 	vL = null;
 	vR = null;
 	vB = null;
 	vT = null;
-	kind = PD.loose;
+	kind = ID.loose;
 	triA = null;
 	triB = null;
 	isActive = !1;
 	nextE = null;
 	prevE = null;
-}, zD = class {
+}, VD = class {
 	edges = [
 		,
 		,
@@ -15371,7 +15387,7 @@ var LD = class {
 	constructor(e, t, n) {
 		this.edges[0] = e, this.edges[1] = t, this.edges[2] = n;
 	}
-}, BD = class e {
+}, HD = class e {
 	allVertices = [];
 	allEdges = [];
 	allTriangles = [];
@@ -15398,7 +15414,7 @@ var LD = class {
 			for (s = r.idx, i = e.prev(s, n); t[i].x === t[s].x && t[i].y === t[s].y;) i = e.prev(i, n);
 			a = e.next(s, n);
 		}
-		let c = this.allVertices.length, l = new LD(t[s]);
+		let c = this.allVertices.length, l = new zD(t[s]);
 		this.allVertices.push(l), e.leftTurning(t[i], t[s], t[a]) && (l.innerLM = !0);
 		let u = l;
 		for (s = a;;) {
@@ -15407,18 +15423,18 @@ var LD = class {
 				continue;
 			}
 			for (; t[s].y <= u.pt.y;) {
-				let r = new LD(t[s]);
-				for (this.allVertices.push(r), this.createEdge(u, r, PD.ascend), u = r, s = a, a = e.next(s, n); X.crossProductSign(u.pt, t[s], t[a]) === 0;) s = a, a = e.next(s, n);
+				let r = new zD(t[s]);
+				for (this.allVertices.push(r), this.createEdge(u, r, ID.ascend), u = r, s = a, a = e.next(s, n); X.crossProductSign(u.pt, t[s], t[a]) === 0;) s = a, a = e.next(s, n);
 			}
 			let i = u;
 			for (; s !== r && t[s].y >= u.pt.y;) {
-				let r = new LD(t[s]);
-				for (this.allVertices.push(r), this.createEdge(r, u, PD.descend), u = r, s = a, a = e.next(s, n); X.crossProductSign(u.pt, t[s], t[a]) === 0;) s = a, a = e.next(s, n);
+				let r = new zD(t[s]);
+				for (this.allVertices.push(r), this.createEdge(r, u, ID.descend), u = r, s = a, a = e.next(s, n); X.crossProductSign(u.pt, t[s], t[a]) === 0;) s = a, a = e.next(s, n);
 			}
 			if (s === r) break;
 			e.leftTurning(i.pt, u.pt, t[s]) && (u.innerLM = !0);
 		}
-		this.createEdge(l, u, PD.descend);
+		this.createEdge(l, u, ID.descend);
 		let d = this.allVertices.length - c, f = c;
 		if (d < 3 || d === 3 && (e.distSqr(this.allVertices[f].pt, this.allVertices[f + 1].pt) <= 1 || e.distSqr(this.allVertices[f + 1].pt, this.allVertices[f + 2].pt) <= 1 || e.distSqr(this.allVertices[f + 2].pt, this.allVertices[f].pt) <= 1)) for (let e = c; e < this.allVertices.length; ++e) this.allVertices[e].edges = [];
 	}
@@ -15438,7 +15454,7 @@ var LD = class {
 			for (let r = t + 1; r < this.allEdges.length; ++r) {
 				let t = this.allEdges[r];
 				if (t.vL.pt.x >= n.vR.pt.x) break;
-				if (t.vT.pt.y < n.vB.pt.y && t.vB.pt.y > n.vT.pt.y && e.segsIntersect(t.vL.pt, t.vR.pt, n.vL.pt, n.vR.pt) === FD.intersect && !this.removeIntersection(t, n)) return !1;
+				if (t.vT.pt.y < n.vB.pt.y && t.vB.pt.y > n.vT.pt.y && e.segsIntersect(t.vL.pt, t.vR.pt, n.vL.pt, n.vR.pt) === LD.intersect && !this.removeIntersection(t, n)) return !1;
 			}
 		}
 		return !0;
@@ -15477,11 +15493,11 @@ var LD = class {
 		return e.removeEdgeFromVertex(s, i), i.vL === s ? i.vL = r : i.vR = r, i.vT = r, r.edges.push(i), r.innerLM = !1, i.vB.innerLM && e.getLocMinAngle(i.vB) <= 0 && (i.vB.innerLM = !1), this.createEdge(r, s, i.kind), !0;
 	}
 	createEdge(e, t, n) {
-		let r = new RD();
-		return this.allEdges.push(r), e.pt.y === t.pt.y ? (r.vB = e, r.vT = t) : e.pt.y < t.pt.y ? (r.vB = t, r.vT = e) : (r.vB = e, r.vT = t), e.pt.x <= t.pt.x ? (r.vL = e, r.vR = t) : (r.vL = t, r.vR = e), r.kind = n, e.edges.push(r), t.edges.push(r), n === PD.loose && (this.pendingDelaunayStack.push(r), this.addEdgeToActives(r)), r;
+		let r = new BD();
+		return this.allEdges.push(r), e.pt.y === t.pt.y ? (r.vB = e, r.vT = t) : e.pt.y < t.pt.y ? (r.vB = t, r.vT = e) : (r.vB = e, r.vT = t), e.pt.x <= t.pt.x ? (r.vL = e, r.vR = t) : (r.vL = t, r.vR = e), r.kind = n, e.edges.push(r), t.edges.push(r), n === ID.loose && (this.pendingDelaunayStack.push(r), this.addEdgeToActives(r)), r;
 	}
 	createTriangle(t, n, r) {
-		let i = new zD(t, n, r);
+		let i = new VD(t, n, r);
 		this.allTriangles.push(i);
 		for (let t = 0; t < 3; ++t) {
 			let n = i.edges[t];
@@ -15503,12 +15519,12 @@ var LD = class {
 		for (let r = 0; r < 3; ++r) {
 			if (t.triA.edges[r] === t) continue;
 			let o = t.triA.edges[r], s = e.edgeContains(o, t.vL);
-			s === ID.left ? (i[1] = o, n = o.vR) : s === ID.right ? (i[1] = o, n = o.vL) : a[1] = o;
+			s === RD.left ? (i[1] = o, n = o.vR) : s === RD.right ? (i[1] = o, n = o.vL) : a[1] = o;
 		}
 		for (let n = 0; n < 3; ++n) {
 			if (t.triB.edges[n] === t) continue;
 			let o = t.triB.edges[n], s = e.edgeContains(o, t.vL);
-			s === ID.left ? (i[2] = o, r = o.vR) : s === ID.right ? (i[2] = o, r = o.vL) : a[2] = o;
+			s === RD.left ? (i[2] = o, r = o.vR) : s === RD.right ? (i[2] = o, r = o.vL) : a[2] = o;
 		}
 		if (n === null || r === null || X.crossProductSign(n.pt, t.vL.pt, t.vR.pt) === 0) return;
 		let o = e.inCircleTest(n.pt, t.vL.pt, t.vR.pt, r.pt);
@@ -15545,9 +15561,9 @@ var LD = class {
 		}
 		if (a === null) return null;
 		let s = a.vT.pt.y <= r ? a.vB : a.vT, c = s.pt.x, l = s.pt.y;
-		if (i = this.firstActive, c < n) for (; i !== null;) i.vR.pt.x > c && i.vL.pt.x < n && i.vB.pt.y > r && i.vT.pt.y < l && e.segsIntersect(i.vB.pt, i.vT.pt, s.pt, t.pt) === FD.intersect && (s = i.vT.pt.y > r ? i.vT : i.vB, c = s.pt.x, l = s.pt.y), i = i.nextE;
-		else for (; i !== null;) i.vR.pt.x < c && i.vL.pt.x > n && i.vB.pt.y > r && i.vT.pt.y < l && e.segsIntersect(i.vB.pt, i.vT.pt, s.pt, t.pt) === FD.intersect && (s = i.vT.pt.y > r ? i.vT : i.vB, c = s.pt.x, l = s.pt.y), i = i.nextE;
-		return this.createEdge(s, t, PD.loose);
+		if (i = this.firstActive, c < n) for (; i !== null;) i.vR.pt.x > c && i.vL.pt.x < n && i.vB.pt.y > r && i.vT.pt.y < l && e.segsIntersect(i.vB.pt, i.vT.pt, s.pt, t.pt) === LD.intersect && (s = i.vT.pt.y > r ? i.vT : i.vB, c = s.pt.x, l = s.pt.y), i = i.nextE;
+		else for (; i !== null;) i.vR.pt.x < c && i.vL.pt.x > n && i.vB.pt.y > r && i.vT.pt.y < l && e.segsIntersect(i.vB.pt, i.vT.pt, s.pt, t.pt) === LD.intersect && (s = i.vT.pt.y > r ? i.vT : i.vB, c = s.pt.x, l = s.pt.y), i = i.nextE;
+		return this.createEdge(s, t, ID.loose);
 	}
 	horizontalBetween(e, t) {
 		let n = e.pt.y, r, i;
@@ -15575,7 +15591,7 @@ var LD = class {
 		let s = e.findLinkingEdge(i, o, i.pt.y < o.pt.y);
 		if (s === null) {
 			if (i.pt.y === o.pt.y && o.pt.y === r && this.horizontalBetween(i, o) !== null) return;
-			s = this.createEdge(i, o, PD.loose);
+			s = this.createEdge(i, o, ID.loose);
 		}
 		this.createTriangle(t, a, s), e.edgeCompleted(s) || this.doTriangulateLeft(s, i, r);
 	}
@@ -15598,7 +15614,7 @@ var LD = class {
 		let s = e.findLinkingEdge(i, o, i.pt.y > o.pt.y);
 		if (s === null) {
 			if (i.pt.y === o.pt.y && o.pt.y === r && this.horizontalBetween(i, o) !== null) return;
-			s = this.createEdge(i, o, PD.loose);
+			s = this.createEdge(i, o, ID.loose);
 		}
 		this.createTriangle(t, s, a), e.edgeCompleted(s) || this.doTriangulateRight(s, i, r);
 	}
@@ -15613,7 +15629,7 @@ var LD = class {
 	execute(t) {
 		let n = [];
 		if (!this.addPaths(t)) return {
-			result: ND.noPolygons,
+			result: FD.noPolygons,
 			solution: n
 		};
 		if (this.lowermostVertex.innerLM) {
@@ -15621,10 +15637,10 @@ var LD = class {
 				let e = this.locMinStack.pop();
 				e.innerLM = !e.innerLM;
 			}
-			for (let e of this.allEdges) e.kind === PD.ascend ? e.kind = PD.descend : e.kind === PD.descend && (e.kind = PD.ascend);
+			for (let e of this.allEdges) e.kind === ID.ascend ? e.kind = ID.descend : e.kind === ID.descend && (e.kind = ID.ascend);
 		} else this.locMinStack.length = 0;
 		if (this.allEdges.sort((e, t) => e.vL.pt.x < t.vL.pt.x ? -1 : +(e.vL.pt.x > t.vL.pt.x)), !this.fixupEdgeIntersects()) return this.cleanUp(), {
-			result: ND.pathsIntersect,
+			result: FD.pathsIntersect,
 			solution: n
 		};
 		this.allVertices.sort((e, t) => e.pt.y === t.pt.y ? e.pt.x < t.pt.x ? -1 : +(e.pt.x > t.pt.x) : t.pt.y < e.pt.y ? -1 : 1), this.mergeDupOrCollinearVertices();
@@ -15634,7 +15650,7 @@ var LD = class {
 				for (; this.locMinStack.length > 0;) {
 					let t = this.locMinStack.pop(), i = this.createInnerLocMinLooseEdge(t);
 					if (i === null) return this.cleanUp(), {
-						result: ND.fail,
+						result: FD.fail,
 						solution: n
 					};
 					e.isHorizontal(i) ? i.vL === i.vB ? this.doTriangulateLeft(i, i.vB, r) : this.doTriangulateRight(i, i.vB, r) : (this.doTriangulateLeft(i, i.vB, r), e.edgeCompleted(i) || this.doTriangulateRight(i, i.vB, r)), this.addEdgeToActives(t.edges[0]), this.addEdgeToActives(t.edges[1]);
@@ -15665,18 +15681,18 @@ var LD = class {
 			i !== 0 && (i < 0 && r.reverse(), n.push(r));
 		}
 		return this.cleanUp(), {
-			result: ND.success,
+			result: FD.success,
 			solution: n
 		};
 	}
 	static isLooseEdge(e) {
-		return e.kind === PD.loose;
+		return e.kind === ID.loose;
 	}
 	static isLeftEdge(e) {
-		return e.kind === PD.ascend;
+		return e.kind === ID.ascend;
 	}
 	static isRightEdge(e) {
-		return e.kind === PD.descend;
+		return e.kind === ID.descend;
 	}
 	static isHorizontal(e) {
 		return e.vB.pt.y === e.vT.pt.y;
@@ -15688,10 +15704,10 @@ var LD = class {
 		return X.crossProductSign(e, t, n) > 0;
 	}
 	static edgeCompleted(e) {
-		return e.triA === null ? !1 : e.triB !== null || e.kind !== PD.loose;
+		return e.triA === null ? !1 : e.triB !== null || e.kind !== ID.loose;
 	}
 	static edgeContains(e, t) {
-		return e.vL === t ? ID.left : e.vR === t ? ID.right : ID.neither;
+		return e.vL === t ? RD.left : e.vR === t ? RD.right : RD.neither;
 	}
 	static getAngle(e, t, n) {
 		let r = Number(t.x - e.x), i = Number(t.y - e.y), a = Number(t.x - n.x), o = Number(t.y - n.y), s = r * a + i * o, c = r * o - i * a;
@@ -15699,7 +15715,7 @@ var LD = class {
 	}
 	static getLocMinAngle(t) {
 		let n, r;
-		return t.edges[0].kind === PD.ascend ? (n = 0, r = 1) : (r = 0, n = 1), e.getAngle(t.edges[r].vT.pt, t.pt, t.edges[n].vT.pt);
+		return t.edges[0].kind === ID.ascend ? (n = 0, r = 1) : (r = 0, n = 1), e.getAngle(t.edges[r].vT.pt, t.pt, t.edges[n].vT.pt);
 	}
 	static removeEdgeFromVertex(e, t) {
 		let n = e.edges.indexOf(t);
@@ -15731,7 +15747,7 @@ var LD = class {
 	static findLinkingEdge(e, t, n) {
 		let r = null;
 		for (let i of e.edges) if (i.vL === t || i.vR === t) {
-			if (i.kind === PD.loose || i.kind === PD.ascend === n) return i;
+			if (i.kind === ID.loose || i.kind === ID.ascend === n) return i;
 			r = i;
 		}
 		return r;
@@ -15750,17 +15766,17 @@ var LD = class {
 	}
 	static segsIntersect(e, t, n, r) {
 		let i = Number(t.y - e.y), a = Number(t.x - e.x), o = Number(r.y - n.y), s = Number(r.x - n.x), c = i * s - o * a;
-		if (c === 0) return FD.collinear;
+		if (c === 0) return LD.collinear;
 		let l = Number(e.x - n.x) * o - Number(e.y - n.y) * s;
-		if (l === 0) return FD.none;
+		if (l === 0) return LD.none;
 		if (l > 0) {
-			if (c < 0 || l >= c) return FD.none;
-		} else if (c > 0 || l <= c) return FD.none;
-		if (l = Number(e.x - n.x) * i - Number(e.y - n.y) * a, l === 0) return FD.none;
+			if (c < 0 || l >= c) return LD.none;
+		} else if (c > 0 || l <= c) return LD.none;
+		if (l = Number(e.x - n.x) * i - Number(e.y - n.y) * a, l === 0) return LD.none;
 		if (l > 0) {
-			if (c > 0 && l < c) return FD.intersect;
-		} else if (c < 0 && l > c) return FD.intersect;
-		return FD.none;
+			if (c > 0 && l < c) return LD.intersect;
+		} else if (c < 0 && l > c) return LD.intersect;
+		return LD.none;
 	}
 	static distSqr(e, t) {
 		let n = Number(e.x - t.x), r = Number(e.y - t.y);
@@ -15770,67 +15786,67 @@ var LD = class {
 		let n = Number(e.x - t.x), r = Number(e.y - t.y);
 		return n * n + r * r;
 	}
-}, VD;
+}, UD;
 (function(e) {
-	e.invalidRect64 = sD, e.invalidRectD = cD;
+	e.invalidRect64 = lD, e.invalidRectD = uD;
 	function t(e, t, n) {
-		return l(eD.Intersection, e, t, n);
+		return l(nD.Intersection, e, t, n);
 	}
 	e.intersect = t;
 	function n(e, t, n, r = 2) {
-		return d(eD.Intersection, e, t, n, r);
+		return d(nD.Intersection, e, t, n, r);
 	}
 	e.intersectD = n;
 	function r(e, t, n) {
-		return typeof t == "number" ? l(eD.Union, e, null, t) : l(eD.Union, e, t, n);
+		return typeof t == "number" ? l(nD.Union, e, null, t) : l(nD.Union, e, t, n);
 	}
 	e.union = r;
 	function i(e, t, n, r) {
-		return typeof t == "number" ? d(eD.Union, e, null, t) : d(eD.Union, e, t, n, r || 2);
+		return typeof t == "number" ? d(nD.Union, e, null, t) : d(nD.Union, e, t, n, r || 2);
 	}
 	e.unionD = i;
 	function a(e, t, n) {
-		return l(eD.Difference, e, t, n);
+		return l(nD.Difference, e, t, n);
 	}
 	e.difference = a;
 	function o(e, t, n, r = 2) {
-		return d(eD.Difference, e, t, n, r);
+		return d(nD.Difference, e, t, n, r);
 	}
 	e.differenceD = o;
 	function s(e, t, n) {
-		return l(eD.Xor, e, t, n);
+		return l(nD.Xor, e, t, n);
 	}
 	e.xor = s;
 	function c(e, t, n, r = 2) {
-		return d(eD.Xor, e, t, n, r);
+		return d(nD.Xor, e, t, n, r);
 	}
 	e.xorD = c;
 	function l(e, t, n, r) {
 		let i = [];
 		if (t === null) return i;
-		let a = new SD();
-		return a.addPaths(t, tD.Subject), n !== null && a.addPaths(n, tD.Clip), a.execute(e, r, i), i;
+		let a = new wD();
+		return a.addPaths(t, rD.Subject), n !== null && a.addPaths(n, rD.Clip), a.execute(e, r, i), i;
 	}
 	e.booleanOp = l;
 	function u(e, t, n, r, i) {
 		if (t === null) return;
-		let a = new SD();
-		a.addPaths(t, tD.Subject), n !== null && a.addPaths(n, tD.Clip), a.execute(e, i, r);
+		let a = new wD();
+		a.addPaths(t, rD.Subject), n !== null && a.addPaths(n, rD.Clip), a.execute(e, i, r);
 	}
 	e.booleanOpWithPolyTree = u;
 	function d(e, t, n, r, i = 2) {
-		let a = [], o = new CD(i);
+		let a = [], o = new TD(i);
 		return o.addSubjectPaths(t), n !== null && o.addClipPaths(n), o.execute(e, r, a), a;
 	}
 	e.booleanOpD = d;
 	function f(e, t, n, r, i, a = 2) {
 		if (t === null) return;
-		let o = new CD(a);
+		let o = new TD(a);
 		o.addSubjectPaths(t), n !== null && o.addClipPaths(n), o.execute(e, i, r);
 	}
 	e.booleanOpDWithPolyTree = f;
 	function p(e, t, n, r, i = 2, a = 0) {
-		let o = new OD(i, a);
+		let o = new AD(i, a);
 		o.addPaths(e, n, r);
 		let s = [];
 		return o.execute(t, s), s;
@@ -15838,7 +15854,7 @@ var LD = class {
 	e.inflatePaths = p;
 	function m(e, t, n, r, i = 2, a = 2, o = 0) {
 		X.checkPrecision(a);
-		let s = 10 ** a, c = D(e, s), l = new OD(i, s * o);
+		let s = 10 ** a, c = D(e, s), l = new AD(i, s * o);
 		l.addPaths(c, n, r);
 		let u = [];
 		return l.execute(t * s, u), de(u, 1 / s);
@@ -15847,10 +15863,10 @@ var LD = class {
 	function h(e, t, n) {
 		if ("left" in e && typeof e.left == "number" && Number.isInteger(e.left)) {
 			let n = e;
-			if (rD.isEmpty(n)) return [];
+			if (aD.isEmpty(n)) return [];
 			if (Array.isArray(t[0])) {
 				let e = t;
-				return e.length === 0 ? [] : new AD(n).execute(e);
+				return e.length === 0 ? [] : new MD(n).execute(e);
 			}
 			{
 				let e = t;
@@ -15859,13 +15875,13 @@ var LD = class {
 		}
 		{
 			let r = e, i = n || 2;
-			if (X.checkPrecision(i), iD.isEmpty(r)) return [];
+			if (X.checkPrecision(i), oD.isEmpty(r)) return [];
 			let a = 10 ** i, o = ce(r, a);
 			if (Array.isArray(t[0])) {
 				let e = t;
 				if (e.length === 0) return [];
 				let n = D(e, a);
-				return de(new AD(o).execute(n), 1 / a);
+				return de(new MD(o).execute(n), 1 / a);
 			}
 			{
 				let e = t;
@@ -15877,10 +15893,10 @@ var LD = class {
 	function g(e, t, n) {
 		if ("left" in e && typeof e.left == "number" && Number.isInteger(e.left)) {
 			let n = e;
-			if (rD.isEmpty(n)) return [];
+			if (aD.isEmpty(n)) return [];
 			if (Array.isArray(t[0])) {
 				let e = t;
-				return e.length === 0 ? [] : new jD(n).execute(e);
+				return e.length === 0 ? [] : new ND(n).execute(e);
 			}
 			{
 				let e = t;
@@ -15889,13 +15905,13 @@ var LD = class {
 		}
 		{
 			let r = e, i = n || 2;
-			if (X.checkPrecision(i), iD.isEmpty(r)) return [];
+			if (X.checkPrecision(i), oD.isEmpty(r)) return [];
 			let a = 10 ** i, o = ce(r, a);
 			if (Array.isArray(t[0])) {
 				let e = t;
 				if (e.length === 0) return [];
 				let n = D(e, a);
-				return de(new jD(o).execute(n), 1 / a);
+				return de(new ND(o).execute(n), 1 / a);
 			}
 			{
 				let e = t;
@@ -15905,19 +15921,19 @@ var LD = class {
 	}
 	e.rectClipLines = g;
 	function _(e, t, n) {
-		return MD.sum(e, t, n);
+		return PD.sum(e, t, n);
 	}
 	e.minkowskiSum = _;
 	function v(e, t, n) {
-		return MD.sumD(e, t, n);
+		return PD.sumD(e, t, n);
 	}
 	e.minkowskiSumD = v;
 	function y(e, t, n) {
-		return MD.diff(e, t, n);
+		return PD.diff(e, t, n);
 	}
 	e.minkowskiDiff = y;
 	function b(e, t, n) {
-		return MD.diffD(e, t, n);
+		return PD.diffD(e, t, n);
 	}
 	e.minkowskiDiffD = b;
 	function x(e) {
@@ -15970,7 +15986,7 @@ var LD = class {
 	e.paths64ToString = w;
 	function T(e, t = 2) {
 		let n = "";
-		for (let r of e) n += nD.toString(r, t);
+		for (let r of e) n += iD.toString(r, t);
 		return n + "\n";
 	}
 	e.pathDToString = T;
@@ -16032,7 +16048,7 @@ var LD = class {
 	function E(e, t) {
 		if (X.isAlmostZero(t - 1)) return e;
 		let n = [];
-		for (let r of e) n.push(nD.scale(r, t));
+		for (let r of e) n.push(iD.scale(r, t));
 		return n;
 	}
 	e.scalePathD = E;
@@ -16093,7 +16109,7 @@ var LD = class {
 	e.pathsD = O;
 	function k(e) {
 		let t = [];
-		for (let n of e) t.push(nD.fromPoint64(n));
+		for (let n of e) t.push(iD.fromPoint64(n));
 		return t;
 	}
 	e.pathD = k;
@@ -16152,7 +16168,7 @@ var LD = class {
 	}
 	e.getBounds = we;
 	function Te(e) {
-		let t = rD.createInvalid();
+		let t = aD.createInvalid();
 		for (let n of e) for (let e of n) e.x < t.left && (t.left = e.x), e.x > t.right && (t.right = e.x), e.y < t.top && (t.top = e.y), e.y > t.bottom && (t.bottom = e.y);
 		return t.left === 2 ** 53 - 1 ? {
 			left: 0,
@@ -16163,7 +16179,7 @@ var LD = class {
 	}
 	e.getBoundsPaths = Te;
 	function Ee(e) {
-		let t = iD.createInvalid();
+		let t = oD.createInvalid();
 		for (let n of e) n.x < t.left && (t.left = n.x), n.x > t.right && (t.right = n.x), n.y < t.top && (t.top = n.y), n.y > t.bottom && (t.bottom = n.y);
 		return Math.abs(t.left - Number.MAX_VALUE) < X.floatingPointTolerance ? {
 			left: 0,
@@ -16174,7 +16190,7 @@ var LD = class {
 	}
 	e.getBoundsD = Ee;
 	function De(e) {
-		let t = iD.createInvalid();
+		let t = oD.createInvalid();
 		for (let n of e) for (let e of n) e.x < t.left && (t.left = e.x), e.x > t.right && (t.right = e.x), e.y < t.top && (t.top = e.y), e.y > t.bottom && (t.bottom = e.y);
 		return Math.abs(t.left - Number.MAX_VALUE) < X.floatingPointTolerance ? {
 			left: 0,
@@ -16319,7 +16335,7 @@ var LD = class {
 	function j(e, t, n, r, i) {
 		for (;;) {
 			let a = 0, o = 0;
-			for (; n > t && nD.equals(e[t], e[n]);) i[n--] = !1;
+			for (; n > t && iD.equals(e[t], e[n]);) i[n--] = !1;
 			for (let r = t + 1; r < n; ++r) {
 				let i = Ue(e[r], e[t], e[n]);
 				i <= o || (o = i, a = r);
@@ -16471,7 +16487,7 @@ var LD = class {
 	e.pointInPolygon = it;
 	function at(e, t, n = 2) {
 		X.checkPrecision(n);
-		let r = 10 ** n, i = Z.fromPointD(nD.scale(e, r)), a = fe(t, r);
+		let r = 10 ** n, i = Z.fromPointD(iD.scale(e, r)), a = fe(t, r);
 		return X.pointInPolygon(i, a);
 	}
 	e.pointInPolygonD = at;
@@ -16512,25 +16528,25 @@ var LD = class {
 	}
 	e.ellipseD = st;
 	function ct(e, t = !0) {
-		return new BD(t).execute(e);
+		return new HD(t).execute(e);
 	}
 	e.triangulate = ct;
 	function lt(e, t, n = !0) {
 		let r;
 		r = t <= 0 ? 1 : t > 8 ? 10 ** 8 : 10 ** t;
-		let i = D(e, r), { result: a, solution: o } = new BD(n).execute(i), s;
-		return s = a === ND.success ? de(o, 1 / r) : [], {
+		let i = D(e, r), { result: a, solution: o } = new HD(n).execute(i), s;
+		return s = a === FD.success ? de(o, 1 / r) : [], {
 			result: a,
 			solution: s
 		};
 	}
 	e.triangulateD = lt;
-})(VD ||= {});
+})(UD ||= {});
 // node_modules/clipper2-ts/dist/index.js
-var { intersect: HD, intersectD: UD, union: WD, unionD: GD, difference: KD, differenceD: qD, xor: JD, xorD: YD, booleanOp: XD, booleanOpWithPolyTree: ZD, booleanOpD: QD, booleanOpDWithPolyTree: $D, inflatePaths: eO, inflatePathsD: tO, rectClip: nO, rectClipLines: rO, minkowskiSum: iO, minkowskiSumD: aO, minkowskiDiff: oO, minkowskiDiffD: sO, area: cO, areaPaths: lO, areaD: uO, areaPathsD: dO, isPositive: fO, isPositiveD: pO, getBounds: mO, getBoundsPaths: hO, getBoundsD: gO, getBoundsPathsD: _O, makePath: vO, makePathD: yO, scalePath64: bO, scalePaths64: xO, scalePathD: SO, scalePathsD: CO, translatePath: wO, translatePaths: TO, translatePathD: EO, translatePathsD: DO, reversePath: OO, reversePathD: kO, reversePaths: AO, reversePathsD: jO, stripDuplicates: MO, trimCollinear: NO, trimCollinearD: PO, pointInPolygon: FO, pointInPolygonD: IO, ellipse: LO, ellipseD: RO, simplifyPath: zO, simplifyPaths: BO, simplifyPathD: VO, simplifyPathsD: HO, ramerDouglasPeucker: UO, ramerDouglasPeuckerPaths: WO, ramerDouglasPeuckerD: GO, ramerDouglasPeuckerPathsD: KO, triangulate: qO, triangulateD: JO } = VD;
-new $E(), new $E(), new $E(), mw(Sw), new $E();
+var { intersect: WD, intersectD: GD, union: KD, unionD: qD, difference: JD, differenceD: YD, xor: XD, xorD: ZD, booleanOp: QD, booleanOpWithPolyTree: $D, booleanOpD: eO, booleanOpDWithPolyTree: tO, inflatePaths: nO, inflatePathsD: rO, rectClip: iO, rectClipLines: aO, minkowskiSum: oO, minkowskiSumD: sO, minkowskiDiff: cO, minkowskiDiffD: lO, area: uO, areaPaths: dO, areaD: fO, areaPathsD: pO, isPositive: mO, isPositiveD: hO, getBounds: gO, getBoundsPaths: _O, getBoundsD: vO, getBoundsPathsD: yO, makePath: bO, makePathD: xO, scalePath64: SO, scalePaths64: CO, scalePathD: wO, scalePathsD: TO, translatePath: EO, translatePaths: DO, translatePathD: OO, translatePathsD: kO, reversePath: AO, reversePathD: jO, reversePaths: MO, reversePathsD: NO, stripDuplicates: PO, trimCollinear: FO, trimCollinearD: IO, pointInPolygon: LO, pointInPolygonD: RO, ellipse: zO, ellipseD: BO, simplifyPath: VO, simplifyPaths: HO, simplifyPathD: UO, simplifyPathsD: WO, ramerDouglasPeucker: GO, ramerDouglasPeuckerPaths: KO, ramerDouglasPeuckerD: qO, ramerDouglasPeuckerPathsD: JO, triangulate: YO, triangulateD: XO } = UD;
+new tD(), new tD(), new tD(), gw(ww), new tD();
 // shared/domain/templates/formula.ts
-var YO = {
+var ZO = {
 	min: [1, 16],
 	max: [1, 16],
 	floor: [1, 1],
@@ -16538,40 +16554,40 @@ var YO = {
 	round: [1, 1],
 	abs: [1, 1],
 	clamp: [3, 3]
-}, XO = V.String({ pattern: "^[A-Za-z][A-Za-z0-9]*$" }), ZO = V.Number({ minimum: 0 }), QO = V.Number({ exclusiveMinimum: 0 }), $O = V.String({
+}, QO = V.String({ pattern: "^[A-Za-z][A-Za-z0-9]*$" }), $O = V.Number({ minimum: 0 }), ek = V.Number({ exclusiveMinimum: 0 }), tk = V.String({
 	minLength: 1,
 	maxLength: 500
-}), ek = V.Union([V.Number(), $O]), tk = V.Union([V.Boolean(), $O]), nk = V.String({
+}), nk = V.Union([V.Number(), tk]), rk = V.Union([V.Boolean(), tk]), ik = V.String({
 	minLength: 1,
 	maxLength: 500
-}), rk = V.Array(QO, {
+}), ak = V.Array(ek, {
 	minItems: 1,
 	maxItems: 24
-}), ik = V.Union([
+}), ok = V.Union([
 	V.Literal("interior"),
 	V.Literal("center"),
 	V.Literal("exterior")
-]), ak = V.Object({
+]), sk = V.Object({
 	mode: V.Union([
 		V.Literal("fixed"),
 		V.Literal("scale"),
 		V.Literal("slice"),
 		V.Literal("fitHostDepth")
 	]),
-	parameter: V.Optional(V.Union([XO, V.Null()])),
+	parameter: V.Optional(V.Union([QO, V.Null()])),
 	title: V.Optional(V.String({ minLength: 1 })),
-	description: V.Optional(nk),
-	quickPicks: V.Optional(rk),
-	startMm: V.Optional(ZO),
-	endMm: V.Optional(ZO),
-	startParameter: V.Optional(XO),
-	endParameter: V.Optional(XO),
-	minMm: V.Optional(QO),
-	maxMm: V.Optional(QO),
-	defaultMm: V.Optional(QO),
-	wallPosition: V.Optional(ik),
+	description: V.Optional(ik),
+	quickPicks: V.Optional(ak),
+	startMm: V.Optional($O),
+	endMm: V.Optional($O),
+	startParameter: V.Optional(QO),
+	endParameter: V.Optional(QO),
+	minMm: V.Optional(ek),
+	maxMm: V.Optional(ek),
+	defaultMm: V.Optional(ek),
+	wallPosition: V.Optional(ok),
 	wallOffsetMm: V.Optional(V.Number())
-}, { additionalProperties: !1 }), ok = V.Object({
+}, { additionalProperties: !1 }), ck = V.Object({
 	bottomMm: V.Optional(V.Number({ minimum: 0 })),
 	elevationMm: V.Optional(V.Number()),
 	horizontalAlign: V.Optional(V.Union([
@@ -16585,7 +16601,7 @@ var YO = {
 		V.Literal("top")
 	])),
 	topInsetMm: V.Optional(V.Number({ minimum: 0 }))
-}, { additionalProperties: !1 }), sk = V.Object({
+}, { additionalProperties: !1 }), lk = V.Object({
 	hosts: V.Array(V.Union([
 		V.Literal("wall"),
 		V.Literal("floor"),
@@ -16598,17 +16614,17 @@ var YO = {
 	}),
 	contact: V.String({ minLength: 1 }),
 	defaultHostSide: V.Optional(V.Union([V.Literal("interior"), V.Literal("exterior")])),
-	defaultPlacement: V.Optional(ok)
-}, { additionalProperties: !1 }), ck = V.Union([V.Object({
+	defaultPlacement: V.Optional(ck)
+}, { additionalProperties: !1 }), uk = V.Union([V.Object({
 	shape: V.Literal("bounds"),
-	clearanceMm: ZO
-}, { additionalProperties: !1 }), V.Null()]), lk = V.Object({
+	clearanceMm: $O
+}, { additionalProperties: !1 }), V.Null()]), dk = V.Object({
 	shape: V.Union([
 		V.Literal("point"),
 		V.Literal("spot"),
 		V.Literal("linear")
 	]),
-	outputLumens: QO,
+	outputLumens: ek,
 	colorModes: V.Array(V.Union([
 		V.Literal("fixedWhite"),
 		V.Literal("colorTemperature"),
@@ -16629,7 +16645,7 @@ var YO = {
 		minimum: 1e3,
 		maximum: 12e3
 	}))
-}, { additionalProperties: !1 }), uk = V.Object({ materialSlot: V.String({ minLength: 1 }) }, { additionalProperties: !1 }), dk = V.Object({ materialSlot: V.String({ minLength: 1 }) }, { additionalProperties: !1 }), fk = V.Union([V.String({ minLength: 1 }), V.Object({
+}, { additionalProperties: !1 }), fk = V.Object({ materialSlot: V.String({ minLength: 1 }) }, { additionalProperties: !1 }), pk = V.Object({ materialSlot: V.String({ minLength: 1 }) }, { additionalProperties: !1 }), mk = V.Union([V.String({ minLength: 1 }), V.Object({
 	material: V.String({ minLength: 1 }),
 	title: V.Optional(V.String({
 		minLength: 1,
@@ -16643,7 +16659,7 @@ var YO = {
 	})),
 	allowColor: V.Optional(V.Boolean()),
 	allowTexture: V.Optional(V.Boolean())
-}, { additionalProperties: !1 })]), pk = V.Object({
+}, { additionalProperties: !1 })]), hk = V.Object({
 	manufacturer: V.Optional(V.String({
 		minLength: 1,
 		maxLength: 120
@@ -16668,7 +16684,7 @@ var YO = {
 		minLength: 1,
 		maxLength: 2e3
 	}))
-}, { additionalProperties: !1 }), mk = V.Object({ shape: V.Union([V.Literal("rectangle"), V.Literal("ellipse")]) }, { additionalProperties: !1 }), hk = V.Object({
+}, { additionalProperties: !1 }), gk = V.Object({ shape: V.Union([V.Literal("rectangle"), V.Literal("ellipse")]) }, { additionalProperties: !1 }), _k = V.Object({
 	minPitchDeg: V.Number({
 		minimum: 0,
 		maximum: 90
@@ -16677,7 +16693,7 @@ var YO = {
 		minimum: 0,
 		maximum: 90
 	})
-}, { additionalProperties: !1 }), gk = V.Object({
+}, { additionalProperties: !1 }), vk = V.Object({
 	schemaVersion: V.Literal(1),
 	kind: V.String({
 		minLength: 1,
@@ -16692,18 +16708,18 @@ var YO = {
 		V.Literal("Areable"),
 		V.Literal("Staircasable")
 	]),
-	attachment: sk,
+	attachment: lk,
 	resize: V.Object({
-		x: ak,
-		y: ak,
-		z: ak
+		x: sk,
+		y: sk,
+		z: sk
 	}, { additionalProperties: !1 }),
 	flip: V.Object({
 		x: V.Boolean(),
 		z: V.Boolean()
 	}, { additionalProperties: !1 }),
-	opening: ck,
-	materialSlots: V.Record(V.String({ minLength: 1 }), fk),
+	opening: uk,
+	materialSlots: V.Record(V.String({ minLength: 1 }), mk),
 	category: V.Optional(V.String({
 		minLength: 1,
 		maxLength: 60
@@ -16715,58 +16731,58 @@ var YO = {
 		maxItems: 32,
 		uniqueItems: !0
 	})),
-	product: V.Optional(pk),
-	properties: V.Optional(V.Record(XO, V.Unknown())),
-	formulas: V.Optional(V.Record(XO, $O)),
-	light: V.Optional(lk),
-	effects: V.Optional(V.Array(Ew, { maxItems: 8 })),
-	screen: V.Optional(uk),
-	mirror: V.Optional(dk),
-	floorCut: V.Optional(mk),
-	roofWindow: V.Optional(hk)
-}, { additionalProperties: !1 }), _k = V.Union([
+	product: V.Optional(hk),
+	properties: V.Optional(V.Record(QO, V.Unknown())),
+	formulas: V.Optional(V.Record(QO, tk)),
+	light: V.Optional(dk),
+	effects: V.Optional(V.Array(Ow, { maxItems: 8 })),
+	screen: V.Optional(fk),
+	mirror: V.Optional(pk),
+	floorCut: V.Optional(gk),
+	roofWindow: V.Optional(_k)
+}, { additionalProperties: !1 }), yk = V.Union([
 	V.Literal("start"),
 	V.Literal("center"),
 	V.Literal("end")
-]), vk = V.Union([
+]), bk = V.Union([
 	V.Object({
-		parameter: XO,
+		parameter: QO,
 		factor: V.Optional(V.Number({ exclusiveMinimum: 0 })),
 		add: V.Optional(V.Number())
 	}, { additionalProperties: !1 }),
 	V.Literal("fill"),
 	V.Integer({ minimum: 0 }),
-	$O
-]), yk = V.Object({
-	x: V.Optional(ek),
-	y: V.Optional(ek),
-	z: V.Optional(ek)
-}, { additionalProperties: !1 }), bk = V.Union([
+	tk
+]), xk = V.Object({
+	x: V.Optional(nk),
+	y: V.Optional(nk),
+	z: V.Optional(nk)
+}, { additionalProperties: !1 }), Sk = V.Union([
 	V.Literal("start"),
 	V.Literal("center"),
 	V.Literal("end")
-]), xk = V.Union([bk, V.Object({
-	at: V.Optional(bk),
+]), Ck = V.Union([Sk, V.Object({
+	at: V.Optional(Sk),
 	of: V.Optional(V.Union([V.Literal("part"), V.Literal("template")])),
-	offsetMm: V.Optional(ek)
-}, { additionalProperties: !1 })]), Sk = V.Object({
+	offsetMm: V.Optional(nk)
+}, { additionalProperties: !1 })]), wk = V.Object({
 	axis: V.Union([
 		V.Literal("x"),
 		V.Literal("y"),
 		V.Literal("z")
 	]),
-	angleDeg: ek,
+	angleDeg: nk,
 	pivot: V.Optional(V.Object({
-		x: V.Optional(xk),
-		y: V.Optional(xk),
-		z: V.Optional(xk)
+		x: V.Optional(Ck),
+		y: V.Optional(Ck),
+		z: V.Optional(Ck)
 	}, { additionalProperties: !1 })),
 	perCopy: V.Optional(V.Boolean())
-}, { additionalProperties: !1 }), Ck = V.Object({
+}, { additionalProperties: !1 }), Tk = V.Object({
 	pin: V.Optional(V.Object({
-		x: V.Optional(_k),
-		y: V.Optional(_k),
-		z: V.Optional(_k)
+		x: V.Optional(yk),
+		y: V.Optional(yk),
+		z: V.Optional(yk)
 	}, { additionalProperties: !1 })),
 	stretch: V.Optional(V.Object({
 		x: V.Optional(V.Boolean()),
@@ -16774,31 +16790,31 @@ var YO = {
 		z: V.Optional(V.Boolean())
 	}, { additionalProperties: !1 })),
 	repeat: V.Optional(V.Object({
-		offsetMm: yk,
-		count: vk
+		offsetMm: xk,
+		count: bk
 	}, { additionalProperties: !1 })),
 	follows: V.Optional(V.String({ minLength: 1 })),
 	extendsWith: V.Optional(V.String({ minLength: 1 })),
 	emitter: V.Optional(V.Literal("linear")),
-	size: V.Optional(yk),
-	visible: V.Optional(tk),
-	rotate: V.Optional(Sk),
-	translate: V.Optional(yk),
+	size: V.Optional(xk),
+	visible: V.Optional(rk),
+	rotate: V.Optional(wk),
+	translate: V.Optional(xk),
 	face: V.Optional(V.Literal("interior"))
 }, { additionalProperties: !1 });
-[...Object.keys(YO)], mw(iy), mw(gk), mw(Ck), new $E(), new $E(), new $E(), new $E(), new $E(), new $E(), new $E(), mw(uT);
+[...Object.keys(ZO)], gw(iy), gw(vk), gw(Tk), new tD(), new tD(), new tD(), new tD(), new tD(), new tD(), new tD(), gw(fT);
 // ha-viewer/houseSource.ts
-var wk = class extends Error {
+var Ek = class extends Error {
 	status;
 	constructor(e, t) {
 		super(e), this.name = "SourceError", this.status = t;
 	}
-}, Tk = (...e) => new URL(`/api/homeplan/${e.map(encodeURIComponent).join("/")}`, location.origin).href, Ek = (e) => {
+}, Dk = (...e) => new URL(`/api/homeplan/${e.map(encodeURIComponent).join("/")}`, location.origin).href, Ok = (e) => {
 	let t = async (t, n) => {
 		let r = new URL(t, location.origin);
-		if (r.origin !== location.origin || !r.pathname.startsWith("/api/homeplan/")) throw new wk("Private resources must be served by this HA integration.", null);
+		if (r.origin !== location.origin || !r.pathname.startsWith("/api/homeplan/")) throw new Ek("Private resources must be served by this HA integration.", null);
 		let i = e()?.fetchWithAuth;
-		if (i === void 0) throw new wk("Waiting for Home Assistant's authenticated transport.", null);
+		if (i === void 0) throw new Ek("Waiting for Home Assistant's authenticated transport.", null);
 		let a = await i(r.pathname + r.search, {
 			cache: "no-store",
 			...n
@@ -16809,31 +16825,45 @@ var wk = class extends Error {
 				let t = await a.json();
 				typeof t == "object" && t && "error" in t && typeof t.error == "object" && t.error !== null && "message" in t.error && typeof t.error.message == "string" && (e = t.error.message);
 			} catch {}
-			throw new wk(e, a.status);
+			throw new Ek(e, a.status);
 		}
 		return a;
 	}, n = async (e, n, r, i = "POST") => {
-		let a = await (await t(Tk(...n), r === void 0 ? void 0 : {
+		let a = await (await t(Dk(...n), r === void 0 ? void 0 : {
 			method: i,
 			headers: { "content-type": "application/json" },
 			body: JSON.stringify(r)
 		})).json();
-		if (!mw(e)(a)) throw new wk("Homeplan returned an incompatible response; update the integration or reload.", null);
+		if (!gw(e)(a)) throw new Ek("Homeplan returned an incompatible response; update the integration or reload.", null);
 		return a;
 	};
 	return {
 		request: n,
 		fetchPrivate: t,
-		bootstrap: () => n(Rb, ["bootstrap"]),
+		bootstrap: () => n(Bb, ["bootstrap"]),
 		config: () => n(jb, ["config"]),
 		connection: () => n(Mb, ["connection"]),
-		clientAddress: () => n(Nb, ["client-address"]),
+		clientAddress: () => n(Fb, ["client-address"]),
 		saveConnection: (e, t) => n(Mb, ["connection"], {
 			expectedRevision: e,
 			patch: t
 		}, "PATCH"),
-		connect: (e) => n(zb, ["source", "connect"], { expectedRevision: e }),
-		useHouse: (e, t, r) => n(Bb, [
+		removeCopy: async (e) => {
+			await t(Dk("houses", e), { method: "DELETE" });
+		},
+		houseArchive: async (e) => (await t(Dk("houses", e, "archive"))).blob(),
+		importArchive: async (e, n) => {
+			let r = await (await t(`${Dk("houses", "import")}${n ? "?replace=1" : ""}`, {
+				method: "POST",
+				headers: { "content-type": "application/zip" },
+				body: e
+			})).json();
+			if (!gw(Nb)(r)) throw new Ek("Homeplan returned an incompatible response; update the integration or reload.", null);
+			return r;
+		},
+		peek: (e) => n(Pb, ["source", "peek"], { url: e }),
+		connect: (e) => n(Vb, ["source", "connect"], { expectedRevision: e }),
+		useHouse: (e, t, r) => n(Hb, [
 			"source",
 			"houses",
 			e,
@@ -16848,7 +16878,7 @@ var wk = class extends Error {
 			"houses",
 			e
 		]),
-		upgradeHouse: (e, t, r) => n(Fb, [
+		upgradeHouse: (e, t, r) => n(Lb, [
 			"houses",
 			e,
 			"upgrade"
@@ -16856,29 +16886,36 @@ var wk = class extends Error {
 			generation: t,
 			...r === void 0 ? {} : { expectedSourceRevisionId: r }
 		}),
-		frontend: () => n(Lb, ["frontend"]),
-		upgradeFrontend: (e) => n(Fb, ["frontend", "upgrade"], { generation: e }),
-		restoreFrontend: async (e) => {
-			await t(Tk("frontend", "restore-packaged"), {
+		frontend: () => n(zb, ["frontend"]),
+		upgradeFrontend: (e) => n(Lb, ["frontend", "upgrade"], { generation: e }),
+		usePreviousFrontend: async (e) => {
+			await t(Dk("frontend", "use-previous"), {
 				method: "POST",
 				headers: { "content-type": "application/json" },
 				body: JSON.stringify({ expectedRevision: e })
 			});
 		},
-		job: (e) => n(Fb, ["jobs", e]),
-		jobs: () => n(Ib, ["jobs"]),
-		cancel: (e) => n(Fb, ["jobs", e], {}, "DELETE"),
+		restoreFrontend: async (e) => {
+			await t(Dk("frontend", "restore-packaged"), {
+				method: "POST",
+				headers: { "content-type": "application/json" },
+				body: JSON.stringify({ expectedRevision: e })
+			});
+		},
+		job: (e) => n(Lb, ["jobs", e]),
+		jobs: () => n(Rb, ["jobs"]),
+		cancel: (e) => n(Lb, ["jobs", e], {}, "DELETE"),
 		moduleUrl: (e, t) => {
 			if (t) {
 				let t = e.connection.builderUrl;
-				if (t === null) throw new wk("DEV MODE needs a Floor Builder URL.", null);
+				if (t === null) throw new Ek("DEV MODE needs a Floor Builder URL.", null);
 				return new URL("ha-viewer/entry.ts", t).href;
 			}
 			let n = e.frontend.active;
 			return n === null ? new URL("/homeplan-static/viewer.js", location.origin).href : new URL(`/homeplan/frontend/${n.bundleId}/files/${n.entry}`, location.origin).href;
 		}
 	};
-}, Dk = "homeplan.nextLoadLocal", Ok = (e) => typeof e == "object" && !!e && "protocol" in e && e.protocol === 1 && "apiProtocol" in e && e.apiProtocol === 1 && "mount" in e && typeof e.mount == "function", kk = class extends HTMLElement {
+}, kk = "homeplan.nextLoadLocal", Ak = (e) => typeof e == "object" && !!e && "protocol" in e && e.protocol === 1 && "apiProtocol" in e && e.apiProtocol === 1 && "mount" in e && typeof e.mount == "function", jk = class extends HTMLElement {
 	hassValue = null;
 	isNarrow = !1;
 	instance = null;
@@ -16886,7 +16923,7 @@ var wk = class extends Error {
 	generation = 0;
 	recovering = !1;
 	bootstrap = null;
-	client = Ek(() => this.hassValue);
+	client = Ok(() => this.hassValue);
 	container = document.createElement("div");
 	constructor() {
 		super(), this.attachShadow({ mode: "open" }).append(this.container);
@@ -16937,11 +16974,11 @@ var wk = class extends Error {
 			else {
 				this.recovering = !0;
 				try {
-					if (sessionStorage.getItem(Dk) !== null) {
+					if (sessionStorage.getItem(kk) !== null) {
 						this.showRecovery(n);
 						return;
 					}
-					sessionStorage.setItem(Dk, JSON.stringify({
+					sessionStorage.setItem(kk, JSON.stringify({
 						message: n,
 						packaged: !t
 					})), location.reload();
@@ -16957,9 +16994,9 @@ var wk = class extends Error {
 		this.started = !0;
 		let t = ++this.generation, n = null;
 		try {
-			let e = sessionStorage.getItem(Dk);
+			let e = sessionStorage.getItem(kk);
 			if (e !== null) {
-				sessionStorage.removeItem(Dk);
+				sessionStorage.removeItem(kk);
 				let t = JSON.parse(e);
 				typeof t == "object" && t && "message" in t && typeof t.message == "string" && "packaged" in t && typeof t.packaged == "boolean" && (n = {
 					message: t.message,
@@ -16971,7 +17008,7 @@ var wk = class extends Error {
 		try {
 			let e = await this.client.bootstrap();
 			if (t !== this.generation) return;
-			this.bootstrap = e, r = e.connection.devMode && n === null, r && e.viewer.houseId !== null && await this.client.fetchPrivate(`${Tk("remote", "houses", e.viewer.houseId, "document")}?generation=${String(e.connection.generation)}`);
+			this.bootstrap = e, r = e.connection.devMode && n === null, r && e.viewer.houseId !== null && await this.client.fetchPrivate(`${Dk("remote", "houses", e.viewer.houseId, "document")}?generation=${String(e.connection.generation)}`);
 			let i = n?.packaged === !0 ? {
 				...e,
 				frontend: {
@@ -16984,7 +17021,7 @@ var wk = class extends Error {
 				/* @vite-ignore */
 				a.href
 );
-			if (!Ok(o)) throw Error("The viewer does not support this integration's loader/API protocol.");
+			if (!Ak(o)) throw Error("The viewer does not support this integration's loader/API protocol.");
 			if (t !== this.generation || this.hassValue === null) return;
 			if (this.instance = o.mount(this.container, {
 				client: this.client,
@@ -17003,4 +17040,4 @@ var wk = class extends Error {
 		}
 	}
 };
-customElements.get("homeplan-panel") === void 0 && customElements.define("homeplan-panel", kk);
+customElements.get("homeplan-panel") === void 0 && customElements.define("homeplan-panel", jk);

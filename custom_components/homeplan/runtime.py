@@ -3,6 +3,8 @@
 import asyncio
 import copy
 import logging
+import os
+import shutil
 import uuid
 from datetime import UTC, datetime
 from pathlib import Path
@@ -17,12 +19,14 @@ from .artifacts import (
     cleanup_unconfigured,
     deactivate,
     download_artifact,
+    extract_archive,
     inventory,
     read_inventory,
     read_manifest,
     verify,
+    write_archive,
 )
-from .const import MAX_MANIFEST
+from .const import MAX_FLOOR_PLANNERS, MAX_MANIFEST
 from .errors import HomeplanError
 from .source_client import SourceClient
 from .storage import EMPTY_BINDINGS, ConfigurationStore, migrate_seed
@@ -165,14 +169,34 @@ class HomeplanRuntime:
 
         def change(value: dict[str, object]) -> None:
             connection = record(value["connection"])
+            servers = [str(url) for url in list(connection.get("servers", []))]
+            if "servers" in patch:
+                servers = []
+                for raw in list(patch["servers"]):
+                    url = normalize_url(raw)
+                    if url is not None and url not in servers:
+                        servers.append(url)
             if "builderUrl" in patch:
                 url = normalize_url(patch["builderUrl"])
-                if url != connection["builderUrl"]:
+                previous = connection["builderUrl"]
+                if url != previous:
                     connection["builderUrl"] = url
                     connection["generation"] = integer(connection["generation"]) + 1
                     connection["origin"] = None if url is None else origin
+                    # Floor planners (Phase 21): the previous default stays in the list, unless the same edit
+                    # gives the list explicitly (deleting the default).
+                    if (
+                        "servers" not in patch
+                        and isinstance(previous, str)
+                        and previous not in servers
+                    ):
+                        servers.insert(0, previous)
                 elif url is not None and origin == "discovered":
                     connection["origin"] = origin
+            # The default is never also listed; the list stays bounded.
+            connection["servers"] = [
+                url for url in servers if url != connection["builderUrl"]
+            ][:MAX_FLOOR_PLANNERS]
             if "devMode" in patch:
                 connection["devMode"] = patch["devMode"]
             if connection["devMode"] and connection["builderUrl"] is None:
@@ -194,7 +218,26 @@ class HomeplanRuntime:
         result = await self.configuration.mutate(
             change, integer(body["expectedRevision"])
         )
-        return {"revision": result["revision"], "connection": result["connection"]}
+        return self.connection_state(result)
+
+    def connection_state(self, config: dict[str, object]) -> dict[str, object]:
+        """The connection response: the stored record and the Homeplan app's address while discovery announces it
+        (Settings keeps that floor planner until its app is removed)."""
+        return {
+            "revision": config["revision"],
+            "connection": config["connection"],
+            "discoveredUrl": self.discovered_url,
+        }
+
+    async def peek(self, body: dict[str, object]) -> dict[str, object]:
+        """Another floor planner's houses, read only (Settings → Houses lists every floor planner's houses)."""
+        validate("PeekRequest", body)
+        url = normalize_url(body["url"])
+        if url is None:
+            raise HomeplanError(400, "validation", "Expected a floor planner URL.")
+        source = SourceClient(async_get_clientsession(self.hass), url)
+        houses = await source.json("houses", "HouseListResponse")
+        return {"url": url, "houses": houses["houses"]}
 
     async def adopt_discovered(self, url: str) -> str:
         """Apply an announced app address under the same serialized revision-aware write.
@@ -224,10 +267,35 @@ class HomeplanRuntime:
                 outcome = "applied"
             else:
                 outcome = "manualKept"
+                # Floor planners (Phase 21): the found app is listed, so it can be made the default.
+                servers = [str(url) for url in list(connection.get("servers", []))]
+                if normalized not in servers:
+                    connection["servers"] = [normalized, *servers][:MAX_FLOOR_PLANNERS]
             value["connection"] = connection
 
         await self.configuration.mutate(change)
         return outcome
+
+    async def list_discovered(self, url: str) -> None:
+        """A discovered app beside a typed default: remembered, and listed among the floor planners (Phase 21) when
+        it is not listed yet. Nothing else changes; an unchanged list writes nothing."""
+        normalized = normalize_url(url)
+        if normalized is None:
+            return
+        self.discovered_url = normalized
+        connection = record(self.configuration.snapshot()["connection"])
+        servers = [str(server) for server in list(connection.get("servers", []))]
+        if normalized == connection["builderUrl"] or normalized in servers:
+            return
+
+        def change(value: dict[str, object]) -> None:
+            current = record(value["connection"])
+            listed = [str(server) for server in list(current.get("servers", []))]
+            if normalized != current["builderUrl"] and normalized not in listed:
+                current["servers"] = [normalized, *listed][:MAX_FLOOR_PLANNERS]
+            value["connection"] = current
+
+        await self.configuration.mutate(change)
 
     def discovery_outcome(self, url: str) -> str:
         """What adopt_discovered would do now, without writing (lets discovery skip a needless probe)."""
@@ -447,6 +515,123 @@ class HomeplanRuntime:
                 self._inventories.pop(next(iter(self._inventories)))
             self._inventories[key] = cached
         return cached
+
+    async def remove_copy(self, house_id: str) -> dict[str, object]:
+        """Removes Home Assistant's copy of a house (Phase 21, Settings -> Houses -> Remove copy). The shown house
+        cannot be removed; its bindings stay, so a later copy of the same house finds them again."""
+
+        def change(value: dict[str, object]) -> None:
+            if record(value["viewer"]).get("houseId") == house_id:
+                raise HomeplanError(
+                    409, "conflict", "This house is shown; choose another house first."
+                )
+            houses = record(value["houses"])
+            if house_id not in houses:
+                raise HomeplanError(
+                    404, "notFound", "No local copy exists for this house."
+                )
+            del houses[house_id]
+            value["houses"] = houses
+            sources = record(value["houseSources"])
+            sources.pop(house_id, None)
+            value["houseSources"] = sources
+
+        result = await self.configuration.mutate(change)
+        await asyncio.to_thread(
+            shutil.rmtree, inside(self.root / "houses", checked_id(house_id)), True
+        )
+        return {"revision": result["revision"]}
+
+    async def house_archive(self, house_id: str) -> bytes:
+        """A local copy as a house archive (Phase 21, Settings → Houses → Download)."""
+        copy_metadata = record(self.configuration.snapshot()["houses"]).get(house_id)
+        if copy_metadata is None:
+            raise HomeplanError(404, "notFound", "No local copy exists for this house.")
+        directory = self.house_path(house_id, text(record(copy_metadata)["snapshotId"]))
+        return await asyncio.to_thread(write_archive, directory)
+
+    async def import_archive(self, data: bytes, replace: bool) -> dict[str, object]:
+        """A house archive uploaded in Settings → Houses (Phase 21) becomes a local copy, verified like a download.
+        An existing copy of the same house is only replaced when asked (`replace`); its bindings are kept."""
+        houses_root = self.root / "houses"
+        await asyncio.to_thread(houses_root.mkdir, parents=True, exist_ok=True)
+        staging, manifest = await asyncio.to_thread(extract_archive, data, houses_root)
+        try:
+            house_id = checked_id(text(manifest["houseId"]))
+            snapshot_id = checked_id(text(manifest["snapshotId"]), True)
+            existing = record(self.configuration.snapshot()["houses"]).get(house_id)
+            if existing is not None and not replace:
+                raise HomeplanError(
+                    409,
+                    "conflict",
+                    "Home Assistant already has a copy of this house; replace it to use the archive.",
+                )
+            directory = houses_root / house_id
+            await asyncio.to_thread(directory.mkdir, exist_ok=True)
+            target = inside(directory, snapshot_id)
+            if await asyncio.to_thread(target.exists):
+                await asyncio.to_thread(verify, target)
+            else:
+                await asyncio.to_thread(os.replace, staging, target)
+            seed = await asyncio.to_thread(
+                lambda: validate(
+                    "BindingSeed", parse_json((target / "bindings.json").read_bytes())
+                )
+            )
+            files = inventory(manifest)
+            outcome = "imported"
+
+            def activate(value: dict[str, object]) -> None:
+                nonlocal outcome
+                houses = record(value["houses"])
+                previous = houses.get(house_id)
+                previous_id = (
+                    record(previous)["snapshotId"] if previous is not None else None
+                )
+                if previous_id == snapshot_id:
+                    outcome = "unchanged"
+                    return
+                houses[house_id] = {
+                    "houseId": house_id,
+                    "snapshotId": snapshot_id,
+                    "sourceRevisionId": manifest["sourceRevisionId"],
+                    "documentRevision": manifest["documentRevision"],
+                    "savedAt": manifest["savedAt"],
+                    "importedAt": now(),
+                    "producerVersion": manifest["producerVersion"],
+                    "fileCount": len(files),
+                    "byteSize": sum(
+                        integer(entry["byteSize"]) for entry in files.values()
+                    ),
+                    "sourceUrl": "archive",
+                    "previousSnapshotId": previous_id,
+                }
+                value["houses"] = houses
+                outcome = "imported" if previous is None else "upgraded"
+                migrate_seed(value, house_id, record(manifest["migration"]), seed)
+                associations = record(value["houseSources"])
+                associations[house_id] = "archive"
+                value["houseSources"] = associations
+
+            before = self.configuration.snapshot()
+            result = await self.configuration.mutate(activate)
+            old = record(before["houses"]).get(house_id)
+            if outcome != "unchanged" and old is not None:
+                try:
+                    await asyncio.to_thread(
+                        deactivate, directory, record(old)["snapshotId"]
+                    )
+                except OSError:
+                    _LOGGER.warning(
+                        "Homeplan imported a house but could not mark the old copy"
+                    )
+            return {
+                "houseId": house_id,
+                "outcome": outcome,
+                "revision": result["revision"],
+            }
+        finally:
+            await asyncio.to_thread(shutil.rmtree, staging, True)
 
     def house_path(self, house_id: str, snapshot_id: str) -> Path:
         return inside(
