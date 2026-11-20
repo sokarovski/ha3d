@@ -16809,7 +16809,7 @@ var Ek = class extends Error {
 	constructor(e, t) {
 		super(e), this.name = "SourceError", this.status = t;
 	}
-}, Dk = (...e) => new URL(`/api/homeplan/${e.map(encodeURIComponent).join("/")}`, location.origin).href, Ok = (e) => {
+}, Dk = "Homeplan returned an incompatible response: this panel does not match the installed integration. To fix it, use the integration's own panel: Settings → Devices & services → Homeplan → Configure → Restore packaged frontend, then reload this page.", Ok = (...e) => new URL(`/api/homeplan/${e.map(encodeURIComponent).join("/")}`, location.origin).href, kk = (e) => {
 	let t = async (t, n) => {
 		let r = new URL(t, location.origin);
 		if (r.origin !== location.origin || !r.pathname.startsWith("/api/homeplan/")) throw new Ek("Private resources must be served by this HA integration.", null);
@@ -16829,12 +16829,12 @@ var Ek = class extends Error {
 		}
 		return a;
 	}, n = async (e, n, r, i = "POST") => {
-		let a = await (await t(Dk(...n), r === void 0 ? void 0 : {
+		let a = await (await t(Ok(...n), r === void 0 ? void 0 : {
 			method: i,
 			headers: { "content-type": "application/json" },
 			body: JSON.stringify(r)
 		})).json();
-		if (!gw(e)(a)) throw new Ek("Homeplan returned an incompatible response; update the integration or reload.", null);
+		if (!gw(e)(a)) throw new Ek(Dk, null);
 		return a;
 	};
 	return {
@@ -16849,16 +16849,16 @@ var Ek = class extends Error {
 			patch: t
 		}, "PATCH"),
 		removeCopy: async (e) => {
-			await t(Dk("houses", e), { method: "DELETE" });
+			await t(Ok("houses", e), { method: "DELETE" });
 		},
-		houseArchive: async (e) => (await t(Dk("houses", e, "archive"))).blob(),
+		houseArchive: async (e) => (await t(Ok("houses", e, "archive"))).blob(),
 		importArchive: async (e, n) => {
-			let r = await (await t(`${Dk("houses", "import")}${n ? "?replace=1" : ""}`, {
+			let r = await (await t(`${Ok("houses", "import")}${n ? "?replace=1" : ""}`, {
 				method: "POST",
 				headers: { "content-type": "application/zip" },
 				body: e
 			})).json();
-			if (!gw(Nb)(r)) throw new Ek("Homeplan returned an incompatible response; update the integration or reload.", null);
+			if (!gw(Nb)(r)) throw new Ek(Dk, null);
 			return r;
 		},
 		peek: (e) => n(Pb, ["source", "peek"], { url: e }),
@@ -16889,14 +16889,14 @@ var Ek = class extends Error {
 		frontend: () => n(zb, ["frontend"]),
 		upgradeFrontend: (e) => n(Lb, ["frontend", "upgrade"], { generation: e }),
 		usePreviousFrontend: async (e) => {
-			await t(Dk("frontend", "use-previous"), {
+			await t(Ok("frontend", "use-previous"), {
 				method: "POST",
 				headers: { "content-type": "application/json" },
 				body: JSON.stringify({ expectedRevision: e })
 			});
 		},
 		restoreFrontend: async (e) => {
-			await t(Dk("frontend", "restore-packaged"), {
+			await t(Ok("frontend", "restore-packaged"), {
 				method: "POST",
 				headers: { "content-type": "application/json" },
 				body: JSON.stringify({ expectedRevision: e })
@@ -16915,7 +16915,7 @@ var Ek = class extends Error {
 			return n === null ? new URL("/homeplan-static/viewer.js", location.origin).href : new URL(`/homeplan/frontend/${n.bundleId}/files/${n.entry}`, location.origin).href;
 		}
 	};
-}, kk = "homeplan.nextLoadLocal", Ak = (e) => typeof e == "object" && !!e && "protocol" in e && e.protocol === 1 && "apiProtocol" in e && e.apiProtocol === 1 && "mount" in e && typeof e.mount == "function", jk = class extends HTMLElement {
+}, Ak = "homeplan.nextLoadLocal", jk = (e) => typeof e == "object" && !!e && "protocol" in e && e.protocol === 1 && "apiProtocol" in e && e.apiProtocol === 1 && "mount" in e && typeof e.mount == "function", Mk = class extends HTMLElement {
 	hassValue = null;
 	isNarrow = !1;
 	instance = null;
@@ -16923,7 +16923,7 @@ var Ek = class extends Error {
 	generation = 0;
 	recovering = !1;
 	bootstrap = null;
-	client = Ok(() => this.hassValue);
+	client = kk(() => this.hassValue);
 	container = document.createElement("div");
 	constructor() {
 		super(), this.attachShadow({ mode: "open" }).append(this.container);
@@ -16974,11 +16974,11 @@ var Ek = class extends Error {
 			else {
 				this.recovering = !0;
 				try {
-					if (sessionStorage.getItem(kk) !== null) {
+					if (sessionStorage.getItem(Ak) !== null) {
 						this.showRecovery(n);
 						return;
 					}
-					sessionStorage.setItem(kk, JSON.stringify({
+					sessionStorage.setItem(Ak, JSON.stringify({
 						message: n,
 						packaged: !t
 					})), location.reload();
@@ -16994,9 +16994,9 @@ var Ek = class extends Error {
 		this.started = !0;
 		let t = ++this.generation, n = null;
 		try {
-			let e = sessionStorage.getItem(kk);
+			let e = sessionStorage.getItem(Ak);
 			if (e !== null) {
-				sessionStorage.removeItem(kk);
+				sessionStorage.removeItem(Ak);
 				let t = JSON.parse(e);
 				typeof t == "object" && t && "message" in t && typeof t.message == "string" && "packaged" in t && typeof t.packaged == "boolean" && (n = {
 					message: t.message,
@@ -17008,7 +17008,7 @@ var Ek = class extends Error {
 		try {
 			let e = await this.client.bootstrap();
 			if (t !== this.generation) return;
-			this.bootstrap = e, r = e.connection.devMode && n === null, r && e.viewer.houseId !== null && await this.client.fetchPrivate(`${Dk("remote", "houses", e.viewer.houseId, "document")}?generation=${String(e.connection.generation)}`);
+			this.bootstrap = e, r = e.connection.devMode && n === null, r && e.viewer.houseId !== null && await this.client.fetchPrivate(`${Ok("remote", "houses", e.viewer.houseId, "document")}?generation=${String(e.connection.generation)}`);
 			let i = n?.packaged === !0 ? {
 				...e,
 				frontend: {
@@ -17021,7 +17021,7 @@ var Ek = class extends Error {
 				/* @vite-ignore */
 				a.href
 );
-			if (!Ak(o)) throw Error("The viewer does not support this integration's loader/API protocol.");
+			if (!jk(o)) throw Error("The viewer does not support this integration's loader/API protocol.");
 			if (t !== this.generation || this.hassValue === null) return;
 			if (this.instance = o.mount(this.container, {
 				client: this.client,
@@ -17040,4 +17040,4 @@ var Ek = class extends Error {
 		}
 	}
 };
-customElements.get("homeplan-panel") === void 0 && customElements.define("homeplan-panel", jk);
+customElements.get("homeplan-panel") === void 0 && customElements.define("homeplan-panel", Mk);
